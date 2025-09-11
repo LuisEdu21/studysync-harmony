@@ -3,10 +3,13 @@ import { StudyTimer } from '@/components/StudyTimer';
 import { TaskList } from '@/components/TaskList';
 import { StudyStats } from '@/components/StudyStats';
 import { StudyCalendar } from '@/components/StudyCalendar';
+import { CalendarIntegrationCard } from '@/components/CalendarIntegrationCard';
+import { SettingsModal } from '@/components/SettingsModal';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
 import { GraduationCap, Settings, Bell, User } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
+import { useSettings } from '@/contexts/SettingsContext';
 
 interface Task {
   id: string;
@@ -92,8 +95,10 @@ const Index = () => {
   const [studyTime, setStudyTime] = useState(125); // minutes studied today
   const [weeklyGoal] = useState(600); // 10 hours per week
   const [streakDays] = useState(7);
+  const [settingsModalOpen, setSettingsModalOpen] = useState(false);
 
   const { toast } = useToast();
+  const { hasAnyCalendarEnabled } = useSettings();
 
   const handleTaskToggle = (taskId: string) => {
     setTasks(prev => prev.map(task => 
@@ -164,7 +169,12 @@ const Index = () => {
               <Button size="sm" variant="ghost" className="p-2">
                 <Bell className="w-5 h-5" />
               </Button>
-              <Button size="sm" variant="ghost" className="p-2">
+              <Button 
+                size="sm" 
+                variant="ghost" 
+                className="p-2"
+                onClick={() => setSettingsModalOpen(true)}
+              >
                 <Settings className="w-5 h-5" />
               </Button>
               <Button size="sm" variant="ghost" className="p-2">
@@ -223,6 +233,7 @@ const Index = () => {
                 });
               }}
             />
+            <CalendarIntegrationCard onOpenSettings={() => setSettingsModalOpen(true)} />
           </div>
 
           {/* Right Column */}
@@ -235,6 +246,12 @@ const Index = () => {
           </div>
         </div>
       </main>
+
+      {/* Settings Modal */}
+      <SettingsModal 
+        open={settingsModalOpen} 
+        onOpenChange={setSettingsModalOpen} 
+      />
     </div>
   );
 };
