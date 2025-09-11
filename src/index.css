@@ -7,34 +7,62 @@ All colors MUST be HSL.
 */
 
 @layer base {
-  :root {
-    --background: 0 0% 100%;
-    --foreground: 222.2 84% 4.9%;
+:root {
+    --background: 248 50% 98%;
+    --foreground: 213 27% 14%;
 
     --card: 0 0% 100%;
-    --card-foreground: 222.2 84% 4.9%;
+    --card-foreground: 213 27% 14%;
 
     --popover: 0 0% 100%;
-    --popover-foreground: 222.2 84% 4.9%;
+    --popover-foreground: 213 27% 14%;
 
-    --primary: 222.2 47.4% 11.2%;
+    --primary: 214 88% 27%;
     --primary-foreground: 210 40% 98%;
+    --primary-light: 214 88% 85%;
 
-    --secondary: 210 40% 96.1%;
-    --secondary-foreground: 222.2 47.4% 11.2%;
+    --secondary: 158 64% 52%;
+    --secondary-foreground: 0 0% 100%;
+    --secondary-light: 158 64% 90%;
 
-    --muted: 210 40% 96.1%;
-    --muted-foreground: 215.4 16.3% 46.9%;
+    --success: 158 64% 52%;
+    --success-foreground: 0 0% 100%;
 
-    --accent: 210 40% 96.1%;
-    --accent-foreground: 222.2 47.4% 11.2%;
+    --warning: 38 92% 50%;
+    --warning-foreground: 0 0% 100%;
 
-    --destructive: 0 84.2% 60.2%;
+    --muted: 214 32% 95%;
+    --muted-foreground: 213 13% 56%;
+
+    --accent: 268 83% 57%;
+    --accent-foreground: 0 0% 100%;
+    --accent-light: 268 83% 92%;
+
+    --destructive: 0 84% 60%;
     --destructive-foreground: 210 40% 98%;
 
-    --border: 214.3 31.8% 91.4%;
-    --input: 214.3 31.8% 91.4%;
-    --ring: 222.2 84% 4.9%;
+    --border: 214 32% 91%;
+    --input: 214 32% 91%;
+    --ring: 214 88% 27%;
+
+    /* Study app specific colors */
+    --focus: 214 88% 27%;
+    --focus-light: 214 88% 85%;
+    --progress: 158 64% 52%;
+    --progress-light: 158 64% 90%;
+    --energy: 38 92% 50%;
+    --energy-light: 38 92% 90%;
+
+    /* Gradients */
+    --gradient-primary: linear-gradient(135deg, hsl(214 88% 27%), hsl(268 83% 57%));
+    --gradient-secondary: linear-gradient(135deg, hsl(158 64% 52%), hsl(214 88% 27%));
+    --gradient-subtle: linear-gradient(180deg, hsl(248 50% 98%), hsl(214 32% 95%));
+    --gradient-card: linear-gradient(145deg, hsl(0 0% 100%), hsl(214 32% 98%));
+
+    /* Shadows */
+    --shadow-primary: 0 4px 20px hsl(214 88% 27% / 0.15);
+    --shadow-card: 0 2px 10px hsl(213 27% 14% / 0.08);
+    --shadow-focus: 0 0 0 3px hsl(214 88% 27% / 0.2);
 
     --radius: 0.5rem;
 
@@ -100,6 +128,61 @@ All colors MUST be HSL.
   }
 
   body {
-    @apply bg-background text-foreground;
+    @apply bg-gradient-subtle text-foreground font-sans;
   }
+}
+
+@layer components {
+  .btn-primary {
+    @apply bg-primary text-primary-foreground hover:bg-primary/90 shadow-primary transition-all duration-200;
+  }
+  
+  .btn-secondary {
+    @apply bg-secondary text-secondary-foreground hover:bg-secondary/90 transition-all duration-200;
+  }
+  
+  .card-study {
+    @apply bg-gradient-card shadow-card border border-border/50 backdrop-blur-sm;
+  }
+  
+  .focus-ring {
+    @apply focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2;
+  }
+}
+
+@layer utilities {
+  .animate-fade-in {
+    animation: fadeIn 0.5s ease-in-out;
+  }
+  
+  .animate-slide-up {
+    animation: slideUp 0.3s ease-out;
+  }
+  
+  .animate-pulse-slow {
+    animation: pulse 3s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+  }
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes slideUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
 }
