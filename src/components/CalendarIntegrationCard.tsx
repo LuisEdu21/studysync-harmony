@@ -5,6 +5,7 @@ import { Badge } from '@/components/ui/badge';
 import { useSettings } from '@/contexts/SettingsContext';
 import { Calendar, Download, Upload, RefreshCw, Settings } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
+import { useCalendarIntegration } from '@/hooks/useCalendarIntegration';
 
 interface CalendarIntegrationCardProps {
   onOpenSettings: () => void;
@@ -13,8 +14,9 @@ interface CalendarIntegrationCardProps {
 export const CalendarIntegrationCard: React.FC<CalendarIntegrationCardProps> = ({ onOpenSettings }) => {
   const { settings, hasAnyCalendarEnabled } = useSettings();
   const { toast } = useToast();
+  const { importEvents, isLoading } = useCalendarIntegration();
 
-  const handleImportEvents = () => {
+  const handleImportEvents = async () => {
     if (!hasAnyCalendarEnabled) {
       toast({
         title: "Nenhum calendário conectado",
@@ -24,11 +26,11 @@ export const CalendarIntegrationCard: React.FC<CalendarIntegrationCardProps> = (
       return;
     }
 
-    toast({
-      title: "Importando eventos...",
-      description: "Buscando novos compromissos dos calendários conectados.",
-      duration: 3000,
-    });
+    try {
+      await importEvents();
+    } catch (error) {
+      // Error already handled in hook
+    }
   };
 
   const handleSyncNow = () => {
@@ -118,20 +120,22 @@ export const CalendarIntegrationCard: React.FC<CalendarIntegrationCardProps> = (
                 variant="outline"
                 size="sm"
                 onClick={handleImportEvents}
+                disabled={isLoading}
                 className="flex items-center gap-2"
               >
                 <Download className="w-4 h-4" />
-                Importar Eventos
+                {isLoading ? 'Importando...' : 'Importar Eventos'}
               </Button>
               
               <Button
                 variant="outline"
                 size="sm"
                 onClick={handleSyncNow}
+                disabled={isLoading}
                 className="flex items-center gap-2"
               >
                 <RefreshCw className="w-4 h-4" />
-                Sincronizar Agora
+                {isLoading ? 'Sincronizando...' : 'Sincronizar Agora'}
               </Button>
             </div>
 

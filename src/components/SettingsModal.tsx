@@ -10,6 +10,7 @@ import { Badge } from '@/components/ui/badge';
 import { useSettings, CalendarSettings } from '@/contexts/SettingsContext';
 import { Calendar, Clock, Download, Upload, AlertCircle } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
+import { useCalendarIntegration } from '@/hooks/useCalendarIntegration';
 
 interface SettingsModalProps {
   open: boolean;
@@ -19,6 +20,7 @@ interface SettingsModalProps {
 export const SettingsModal: React.FC<SettingsModalProps> = ({ open, onOpenChange }) => {
   const { settings, updateSettings } = useSettings();
   const { toast } = useToast();
+  const { connectCalendar, disconnectCalendar, isLoading } = useCalendarIntegration();
   const [tempSettings, setTempSettings] = useState<CalendarSettings>(settings);
 
   const handleSave = () => {
@@ -36,12 +38,45 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({ open, onOpenChange
     onOpenChange(false);
   };
 
-  const handleConnectCalendar = (type: 'google' | 'outlook') => {
-    toast({
-      title: "Integração de Calendário",
-      description: "Para conectar calendários externos, é necessário integrar com Supabase para autenticação segura.",
-      duration: 5000,
-    });
+  const handleConnectCalendar = async (type: 'google' | 'outlook') => {
+    try {
+      const provider = type === 'google' ? 'google' : 'microsoft';
+      await connectCalendar(provider);
+      
+      // Update settings to enable the calendar
+      setTempSettings(prev => ({
+        ...prev,
+        [type === 'google' ? 'googleCalendar' : 'outlookCalendar']: {
+          ...prev[type === 'google' ? 'googleCalendar' : 'outlookCalendar'],
+          enabled: true
+        }
+      }));
+
+      toast({
+        title: "Calendário conectado!",
+        description: `${type === 'google' ? 'Google Calendar' : 'Outlook Calendar'} foi conectado com sucesso.`,
+      });
+    } catch (error) {
+      console.error('Connection error:', error);
+    }
+  };
+
+  const handleDisconnectCalendar = async (type: 'google' | 'outlook') => {
+    try {
+      const provider = type === 'google' ? 'google' : 'microsoft';
+      await disconnectCalendar(provider);
+      
+      // Update settings to disable the calendar
+      setTempSettings(prev => ({
+        ...prev,
+        [type === 'google' ? 'googleCalendar' : 'outlookCalendar']: {
+          ...prev[type === 'google' ? 'googleCalendar' : 'outlookCalendar'],
+          enabled: false
+        }
+      }));
+    } catch (error) {
+      console.error('Disconnection error:', error);
+    }
   };
 
   const updateCalendarSetting = (
@@ -95,11 +130,12 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({ open, onOpenChange
                 </div>
                 <Switch
                   checked={tempSettings.googleCalendar.enabled}
+                  disabled={isLoading}
                   onCheckedChange={(enabled) => {
                     if (enabled) {
                       handleConnectCalendar('google');
                     } else {
-                      updateCalendarSetting('googleCalendar', 'enabled', enabled);
+                      handleDisconnectCalendar('google');
                     }
                   }}
                 />
@@ -158,11 +194,12 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({ open, onOpenChange
                 </div>
                 <Switch
                   checked={tempSettings.outlookCalendar.enabled}
+                  disabled={isLoading}
                   onCheckedChange={(enabled) => {
                     if (enabled) {
                       handleConnectCalendar('outlook');
                     } else {
-                      updateCalendarSetting('outlookCalendar', 'enabled', enabled);
+                      handleDisconnectCalendar('outlook');
                     }
                   }}
                 />

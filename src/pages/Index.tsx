@@ -5,6 +5,7 @@ import { StudyStats } from '@/components/StudyStats';
 import { StudyCalendar } from '@/components/StudyCalendar';
 import { CalendarIntegrationCard } from '@/components/CalendarIntegrationCard';
 import { SettingsModal } from '@/components/SettingsModal';
+import { StudyEventCreator } from '@/components/StudyEventCreator';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
 import { GraduationCap, Settings, Bell, User } from 'lucide-react';
@@ -62,7 +63,7 @@ const Index = () => {
     }
   ]);
 
-  const [studyEvents] = useState<StudyEvent[]>([
+  const [studyEvents, setStudyEvents] = useState<StudyEvent[]>([
     {
       id: '1',
       title: 'Prova de Cálculo',
@@ -96,6 +97,7 @@ const Index = () => {
   const [weeklyGoal] = useState(600); // 10 hours per week
   const [streakDays] = useState(7);
   const [settingsModalOpen, setSettingsModalOpen] = useState(false);
+  const [eventCreatorOpen, setEventCreatorOpen] = useState(false);
 
   const { toast } = useToast();
   const { hasAnyCalendarEnabled } = useSettings();
@@ -232,6 +234,7 @@ const Index = () => {
                   duration: 3000,
                 });
               }}
+              onCreateEvent={() => setEventCreatorOpen(true)}
             />
             <CalendarIntegrationCard onOpenSettings={() => setSettingsModalOpen(true)} />
           </div>
@@ -251,6 +254,25 @@ const Index = () => {
       <SettingsModal 
         open={settingsModalOpen} 
         onOpenChange={setSettingsModalOpen} 
+      />
+
+      {/* Study Event Creator */}
+      <StudyEventCreator
+        open={eventCreatorOpen}
+        onOpenChange={setEventCreatorOpen}
+        onEventCreated={(event) => {
+          // Add event to local state
+          const newEvent = {
+            id: Date.now().toString(),
+            title: event.title,
+            subject: event.subject || '',
+            date: event.startTime.split('T')[0],
+            time: event.startTime.split('T')[1]?.substring(0, 5) || '',
+            duration: Math.round((new Date(event.endTime).getTime() - new Date(event.startTime).getTime()) / 60000),
+            type: 'study' as const
+          };
+          setStudyEvents(prev => [...prev, newEvent]);
+        }}
       />
     </div>
   );

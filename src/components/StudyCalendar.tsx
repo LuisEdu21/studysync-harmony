@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { ChevronLeft, ChevronRight, Calendar, Clock } from 'lucide-react';
+import { ChevronLeft, ChevronRight, Calendar, Clock, Plus } from 'lucide-react';
 
 interface StudyEvent {
   id: string;
@@ -17,9 +17,10 @@ interface StudyEvent {
 interface StudyCalendarProps {
   events: StudyEvent[];
   onEventClick?: (event: StudyEvent) => void;
+  onCreateEvent?: () => void;
 }
 
-export const StudyCalendar = ({ events, onEventClick }: StudyCalendarProps) => {
+export const StudyCalendar = ({ events, onEventClick, onCreateEvent }: StudyCalendarProps) => {
   const [currentDate, setCurrentDate] = useState(new Date());
   
   const today = new Date();
@@ -65,6 +66,16 @@ export const StudyCalendar = ({ events, onEventClick }: StudyCalendarProps) => {
           Calendário Semanal
         </h3>
         <div className="flex items-center gap-2">
+          {onCreateEvent && (
+            <Button
+              onClick={onCreateEvent}
+              size="sm"
+              className="flex items-center gap-1 mr-2"
+            >
+              <Plus className="w-4 h-4" />
+              Criar Evento
+            </Button>
+          )}
           <Button
             onClick={() => navigateWeek('prev')}
             size="sm"
