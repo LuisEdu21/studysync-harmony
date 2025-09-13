@@ -7,6 +7,7 @@ import { CalendarIntegrationCard } from '@/components/CalendarIntegrationCard';
 import { SettingsModal } from '@/components/SettingsModal';
 import { StudyEventCreator } from '@/components/StudyEventCreator';
 import { StudyPlanner } from '@/components/StudyPlanner';
+import { useSmartReminders } from '@/hooks/useSmartReminders';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
 import { GraduationCap, Settings, Bell, User } from 'lucide-react';
@@ -106,6 +107,27 @@ const Index = () => {
 
   const { toast } = useToast();
   const { hasAnyCalendarEnabled } = useSettings();
+
+  // Initialize smart reminders
+  const {
+    settings: reminderSettings,
+    setSettings: setReminderSettings,
+    activeReminders,
+    permissionGranted,
+    requestNotificationPermission
+  } = useSmartReminders(
+    tasks.map(t => ({ ...t, difficulty: t.difficulty || 3 })), 
+    [],
+    (sessionId, newDateTime) => {
+      // Handle session rescheduling
+      toast({
+        title: "Sessão Reagendada",
+        description: newDateTime 
+          ? `Reagendada para ${new Date(newDateTime).toLocaleString('pt-BR')}`
+          : "Sessão foi reagendada automaticamente",
+      });
+    }
+  );
 
   const handleTaskToggle = (taskId: string) => {
     setTasks(prev => prev.map(task => 
@@ -263,7 +285,17 @@ const Index = () => {
       {/* Settings Modal */}
       <SettingsModal 
         open={settingsModalOpen} 
-        onOpenChange={setSettingsModalOpen} 
+        onOpenChange={setSettingsModalOpen}
+        tasks={tasks}
+        sessions={[]}
+        onRescheduleSession={(sessionId, newDateTime) => {
+          toast({
+            title: "Sessão Reagendada",
+            description: newDateTime 
+              ? `Reagendada para ${new Date(newDateTime).toLocaleString('pt-BR')}`
+              : "Sessão foi reagendada automaticamente",
+          });
+        }}
       />
 
       {/* Study Event Creator */}
