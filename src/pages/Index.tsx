@@ -6,6 +6,7 @@ import { StudyCalendar } from '@/components/StudyCalendar';
 import { CalendarIntegrationCard } from '@/components/CalendarIntegrationCard';
 import { SettingsModal } from '@/components/SettingsModal';
 import { StudyEventCreator } from '@/components/StudyEventCreator';
+import { StudyPlanner } from '@/components/StudyPlanner';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
 import { GraduationCap, Settings, Bell, User } from 'lucide-react';
@@ -20,6 +21,7 @@ interface Task {
   priority: 'low' | 'medium' | 'high';
   completed: boolean;
   estimatedTime: number;
+  difficulty?: number;
 }
 
 interface StudyEvent {
@@ -41,7 +43,8 @@ const Index = () => {
       dueDate: '2024-12-20',
       priority: 'high',
       completed: false,
-      estimatedTime: 90
+      estimatedTime: 90,
+      difficulty: 4
     },
     {
       id: '2',
@@ -50,7 +53,8 @@ const Index = () => {
       dueDate: '2024-12-22',
       priority: 'medium',
       completed: false,
-      estimatedTime: 120
+      estimatedTime: 120,
+      difficulty: 3
     },
     {
       id: '3',
@@ -59,7 +63,8 @@ const Index = () => {
       dueDate: '2024-12-18',
       priority: 'low',
       completed: true,
-      estimatedTime: 45
+      estimatedTime: 45,
+      difficulty: 2
     }
   ]);
 
@@ -120,7 +125,8 @@ const Index = () => {
   const handleTaskAdd = (newTask: Omit<Task, 'id'>) => {
     const task: Task = {
       ...newTask,
-      id: Date.now().toString()
+      id: Date.now().toString(),
+      difficulty: newTask.difficulty || 3
     };
     setTasks(prev => [...prev, task]);
     
@@ -241,6 +247,10 @@ const Index = () => {
 
           {/* Right Column */}
           <div className="space-y-8">
+            <StudyPlanner 
+              tasks={tasks.map(t => ({ ...t, difficulty: t.difficulty || 3 }))}
+              onTaskUpdate={(updatedTasks) => setTasks(updatedTasks)} 
+            />
             <TaskList
               tasks={tasks}
               onTaskToggle={handleTaskToggle}
