@@ -5,6 +5,7 @@ import { Checkbox } from '@/components/ui/checkbox';
 import { Input } from '@/components/ui/input';
 import { Badge } from '@/components/ui/badge';
 import { Plus, Calendar, Clock, BookOpen } from 'lucide-react';
+import { type RealTask } from '@/hooks/useRealTasks';
 
 interface Task {
   id: string;
@@ -17,9 +18,9 @@ interface Task {
 }
 
 interface TaskListProps {
-  tasks: Task[];
+  tasks: RealTask[];
   onTaskToggle: (taskId: string) => void;
-  onTaskAdd: (task: Omit<Task, 'id'>) => void;
+  onTaskAdd: (task: Omit<RealTask, 'id' | 'user_id' | 'created_at' | 'updated_at'>) => void;
 }
 
 export const TaskList = ({ tasks, onTaskToggle, onTaskAdd }: TaskListProps) => {
@@ -31,10 +32,11 @@ export const TaskList = ({ tasks, onTaskToggle, onTaskAdd }: TaskListProps) => {
       onTaskAdd({
         title: newTask,
         subject: 'Geral',
-        dueDate: new Date().toISOString().split('T')[0],
+        due_date: new Date().toISOString().split('T')[0],
         priority: 'medium',
         completed: false,
-        estimatedTime: 30
+        estimated_time: 30,
+        difficulty: 'medium'
       });
       setNewTask('');
       setIsAdding(false);
@@ -120,11 +122,11 @@ export const TaskList = ({ tasks, onTaskToggle, onTaskAdd }: TaskListProps) => {
                       </span>
                       <span className="flex items-center gap-1">
                         <Clock className="w-3 h-3" />
-                        {task.estimatedTime}min
+                        {task.estimated_time}min
                       </span>
                       <span className="flex items-center gap-1">
                         <Calendar className="w-3 h-3" />
-                        {new Date(task.dueDate).toLocaleDateString('pt-BR')}
+                        {task.due_date ? new Date(task.due_date).toLocaleDateString('pt-BR') : 'Sem prazo'}
                       </span>
                     </div>
                   </div>

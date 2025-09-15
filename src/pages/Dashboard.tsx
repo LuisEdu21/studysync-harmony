@@ -9,6 +9,10 @@ import { useSmartReminders } from '@/hooks/useSmartReminders';
 import { Card } from '@/components/ui/card';
 import { useToast } from '@/hooks/use-toast';
 import { useAuth } from '@/contexts/AuthContext';
+import { useUserProfile } from '@/hooks/useUserProfile';
+import { useRealTasks } from '@/hooks/useRealTasks';
+import { useStudySessions } from '@/hooks/useStudySessions';
+import { useStudyStats } from '@/hooks/useStudyStats';
 
 interface Task {
   id: string;
@@ -33,28 +37,10 @@ interface StudyEvent {
 
 const Dashboard = () => {
   const { user } = useAuth();
-  const [tasks] = useState<Task[]>([
-    {
-      id: '1',
-      title: 'Estudar Cálculo I - Derivadas',
-      subject: 'Matemática',
-      dueDate: '2024-12-20',
-      priority: 'high',
-      completed: false,
-      estimatedTime: 90,
-      difficulty: 4
-    },
-    {
-      id: '2',
-      title: 'Relatório de Física',
-      subject: 'Física',
-      dueDate: '2024-12-22',
-      priority: 'medium',
-      completed: false,
-      estimatedTime: 120,
-      difficulty: 3
-    }
-  ]);
+  const { profile } = useUserProfile();
+  const { tasks } = useRealTasks();
+  const { addSession } = useStudySessions();
+  const { todayStats } = useStudyStats();
 
   const [studyEvents, setStudyEvents] = useState<StudyEvent[]>([
     {
@@ -68,9 +54,10 @@ const Dashboard = () => {
     }
   ]);
 
-  const [studyTime] = useState(125);
-  const [weeklyGoal] = useState(600);
-  const [streakDays] = useState(7);
+  // Get real data from hooks
+  const studyTime = todayStats?.total_study_minutes || 0;
+  const weeklyGoal = profile?.weekly_goal_minutes || 600;
+  const streakDays = todayStats?.streak_days || 0;
   const [settingsModalOpen, setSettingsModalOpen] = useState(false);
   const [eventCreatorOpen, setEventCreatorOpen] = useState(false);
 
@@ -78,7 +65,14 @@ const Dashboard = () => {
 
   // Initialize smart reminders
   useSmartReminders(
-    tasks.map(t => ({ ...t, difficulty: t.difficulty || 3 })), 
+    tasks.map(t => ({ 
+      ...t, 
+      dueDate: t.due_date || '',
+      estimatedTime: t.estimated_time || 60,
+      difficulty: typeof t.difficulty === 'string' ? 
+        (t.difficulty === 'easy' ? 1 : t.difficulty === 'medium' ? 3 : 5) : 
+        (t.difficulty || 3)
+    })), 
     [],
     (sessionId, newDateTime) => {
       toast({
@@ -90,7 +84,14 @@ const Dashboard = () => {
     }
   );
 
-  const handleSessionComplete = (type: 'study' | 'break', duration: number) => {
+  const handleSessionComplete = async (type: 'study' | 'break', duration: number) => {
+    // Save session to database
+    await addSession({
+      duration_minutes: duration,
+      session_type: type,
+      subject: type === 'study' ? 'Sessão Geral' : undefined
+    });
+
     if (type === 'study') {
       toast({
         title: "Sessão de estudo concluída! 🎯",
@@ -116,7 +117,7 @@ const Dashboard = () => {
         <div className="flex items-center justify-between">
           <div>
             <h1 className="text-2xl font-semibold mb-2">
-              Olá, {user?.user_metadata?.full_name || user?.email?.split('@')[0]}! 
+              Olá, {profile?.display_name || user?.user_metadata?.full_name || user?.email?.split('@')[0]}! 
             </h1>
             <p className="text-primary-foreground/90">
               Você já estudou {Math.floor(studyTime / 60)}h {studyTime % 60}min hoje. Continue assim!

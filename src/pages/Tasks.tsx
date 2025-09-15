@@ -1,101 +1,48 @@
-import { useState } from 'react';
 import { TaskList } from '@/components/TaskList';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Plus, CheckCircle, Clock, AlertTriangle } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
-
-interface Task {
-  id: string;
-  title: string;
-  subject: string;
-  dueDate: string;
-  priority: 'low' | 'medium' | 'high';
-  completed: boolean;
-  estimatedTime: number;
-  difficulty?: number;
-}
+import { useRealTasks, type RealTask } from '@/hooks/useRealTasks';
 
 const Tasks = () => {
-  const [tasks, setTasks] = useState<Task[]>([
-    {
-      id: '1',
-      title: 'Estudar Cálculo I - Derivadas',
-      subject: 'Matemática',
-      dueDate: '2024-12-20',
-      priority: 'high',
-      completed: false,
-      estimatedTime: 90,
-      difficulty: 4
-    },
-    {
-      id: '2',
-      title: 'Relatório de Física',
-      subject: 'Física',
-      dueDate: '2024-12-22',
-      priority: 'medium',
-      completed: false,
-      estimatedTime: 120,
-      difficulty: 3
-    },
-    {
-      id: '3',
-      title: 'Leitura - Capítulo 5',
-      subject: 'História',
-      dueDate: '2024-12-18',
-      priority: 'low',
-      completed: true,
-      estimatedTime: 45,
-      difficulty: 2
-    },
-    {
-      id: '4',
-      title: 'Exercícios de Química',
-      subject: 'Química',
-      dueDate: '2024-12-25',
-      priority: 'low',
-      completed: false,
-      estimatedTime: 60,
-      difficulty: 2
-    }
-  ]);
-
   const { toast } = useToast();
+  const { tasks, addTask, toggleTask, loading } = useRealTasks();
 
-  const handleTaskToggle = (taskId: string) => {
-    setTasks(prev => prev.map(task => 
-      task.id === taskId ? { ...task, completed: !task.completed } : task
-    ));
-    
+  const handleTaskToggle = async (taskId: string) => {
     const task = tasks.find(t => t.id === taskId);
-    if (task && !task.completed) {
-      toast({
-        title: "Tarefa concluída! 🎉",
-        description: `"${task.title}" foi marcada como concluída.`,
-        duration: 3000,
-      });
-    }
-  };
+    if (!task) return;
 
-  const handleTaskAdd = (newTask: Omit<Task, 'id'>) => {
-    const task: Task = {
-      ...newTask,
-      id: Date.now().toString(),
-      difficulty: newTask.difficulty || 3
-    };
-    setTasks(prev => [...prev, task]);
+    await toggleTask(taskId);
     
     toast({
-      title: "Nova tarefa adicionada!",
-      description: `"${task.title}" foi adicionada à sua lista.`,
+      title: !task.completed ? "Tarefa concluída! 🎉" : "Tarefa reaberta",
+      description: !task.completed 
+        ? `Parabéns! Você concluiu "${task.title}"`
+        : `"${task.title}" foi marcada como pendente`,
       duration: 3000,
     });
   };
 
+  const handleTaskAdd = async (newTask: Omit<RealTask, 'id' | 'user_id' | 'created_at' | 'updated_at'>) => {
+    await addTask(newTask);
+    
+    toast({
+      title: "Nova tarefa adicionada! ✅",
+      description: `"${newTask.title}" foi adicionada à sua lista`,
+      duration: 3000,
+    });
+  };
+
+  // Filter tasks
   const completedTasks = tasks.filter(task => task.completed);
   const pendingTasks = tasks.filter(task => !task.completed);
-  const highPriorityTasks = pendingTasks.filter(task => task.priority === 'high');
-  const overdueTasks = pendingTasks.filter(task => new Date(task.dueDate) < new Date());
+  const highPriorityTasks = tasks.filter(task => task.priority === 'high' && !task.completed);
+  const overdueTasks = tasks.filter(task => {
+    const today = new Date();
+    const dueDate = new Date(task.due_date || '');
+    return task.due_date && dueDate < today && !task.completed;
+  });
 
   return (
     <div className="space-y-8">
@@ -175,7 +122,7 @@ const Tasks = () => {
               <div key={task.id} className="flex items-center justify-between p-2 bg-warning/10 rounded text-sm">
                 <span>{task.title} - {task.subject}</span>
                 <span className="text-xs text-muted-foreground">
-                  {new Date(task.dueDate).toLocaleDateString('pt-BR')}
+                  {task.due_date ? new Date(task.due_date).toLocaleDateString('pt-BR') : 'Sem prazo'}
                 </span>
               </div>
             ))}
@@ -184,11 +131,17 @@ const Tasks = () => {
       )}
 
       {/* Task List */}
-      <TaskList
-        tasks={tasks}
-        onTaskToggle={handleTaskToggle}
-        onTaskAdd={handleTaskAdd}
-      />
+      {loading ? (
+        <div className="flex justify-center p-8">
+          <div className="text-muted-foreground">Carregando tarefas...</div>
+        </div>
+      ) : (
+        <TaskList 
+          tasks={tasks}
+          onTaskToggle={handleTaskToggle}
+          onTaskAdd={handleTaskAdd}
+        />
+      )}
     </div>
   );
 };

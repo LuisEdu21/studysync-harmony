@@ -273,11 +273,11 @@ const Index = () => {
               tasks={tasks.map(t => ({ ...t, difficulty: t.difficulty || 3 }))}
               onTaskUpdate={(updatedTasks) => setTasks(updatedTasks)} 
             />
-            <TaskList
-              tasks={tasks}
-              onTaskToggle={handleTaskToggle}
-              onTaskAdd={handleTaskAdd}
-            />
+        <TaskList 
+          tasks={[]}
+          onTaskToggle={() => {}}
+          onTaskAdd={() => {}}
+        />
           </div>
         </div>
       </main>
