@@ -95,6 +95,149 @@ export type Database = {
         }
         Relationships: []
       }
+      profiles: {
+        Row: {
+          created_at: string
+          display_name: string | null
+          id: string
+          updated_at: string
+          user_id: string
+          weekly_goal_minutes: number | null
+        }
+        Insert: {
+          created_at?: string
+          display_name?: string | null
+          id?: string
+          updated_at?: string
+          user_id: string
+          weekly_goal_minutes?: number | null
+        }
+        Update: {
+          created_at?: string
+          display_name?: string | null
+          id?: string
+          updated_at?: string
+          user_id?: string
+          weekly_goal_minutes?: number | null
+        }
+        Relationships: []
+      }
+      study_sessions: {
+        Row: {
+          completed_at: string
+          created_at: string
+          duration_minutes: number
+          id: string
+          session_type: string | null
+          subject: string | null
+          task_id: string | null
+          user_id: string
+        }
+        Insert: {
+          completed_at?: string
+          created_at?: string
+          duration_minutes: number
+          id?: string
+          session_type?: string | null
+          subject?: string | null
+          task_id?: string | null
+          user_id: string
+        }
+        Update: {
+          completed_at?: string
+          created_at?: string
+          duration_minutes?: number
+          id?: string
+          session_type?: string | null
+          subject?: string | null
+          task_id?: string | null
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "study_sessions_task_id_fkey"
+            columns: ["task_id"]
+            isOneToOne: false
+            referencedRelation: "tasks"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      study_stats: {
+        Row: {
+          created_at: string
+          date: string
+          id: string
+          sessions_count: number | null
+          streak_days: number | null
+          total_study_minutes: number | null
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          date: string
+          id?: string
+          sessions_count?: number | null
+          streak_days?: number | null
+          total_study_minutes?: number | null
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          date?: string
+          id?: string
+          sessions_count?: number | null
+          streak_days?: number | null
+          total_study_minutes?: number | null
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      tasks: {
+        Row: {
+          completed: boolean | null
+          created_at: string
+          difficulty: string | null
+          due_date: string | null
+          estimated_time: number | null
+          id: string
+          priority: string | null
+          subject: string | null
+          title: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          completed?: boolean | null
+          created_at?: string
+          difficulty?: string | null
+          due_date?: string | null
+          estimated_time?: number | null
+          id?: string
+          priority?: string | null
+          subject?: string | null
+          title: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          completed?: boolean | null
+          created_at?: string
+          difficulty?: string | null
+          due_date?: string | null
+          estimated_time?: number | null
+          id?: string
+          priority?: string | null
+          subject?: string | null
+          title?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       user_calendar_tokens: {
         Row: {
           access_token: string
@@ -133,7 +276,10 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
-      [_ in never]: never
+      calculate_user_streak: {
+        Args: { user_id_param: string }
+        Returns: number
+      }
     }
     Enums: {
       [_ in never]: never
