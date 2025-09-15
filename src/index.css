@@ -8,61 +8,67 @@ All colors MUST be HSL.
 
 @layer base {
 :root {
-    --background: 248 50% 98%;
-    --foreground: 213 27% 14%;
+    --background: 0 0% 99%;
+    --foreground: 210 6% 21%;
 
     --card: 0 0% 100%;
-    --card-foreground: 213 27% 14%;
+    --card-foreground: 210 6% 21%;
 
     --popover: 0 0% 100%;
-    --popover-foreground: 213 27% 14%;
+    --popover-foreground: 210 6% 21%;
 
-    --primary: 214 88% 27%;
-    --primary-foreground: 210 40% 98%;
-    --primary-light: 214 88% 85%;
+    --primary: 221 83% 53%;
+    --primary-foreground: 0 0% 100%;
+    --primary-light: 221 83% 95%;
 
-    --secondary: 158 64% 52%;
-    --secondary-foreground: 0 0% 100%;
-    --secondary-light: 158 64% 90%;
+    --secondary: 210 40% 96%;
+    --secondary-foreground: 210 6% 21%;
+    --secondary-light: 210 40% 98%;
 
-    --success: 158 64% 52%;
+    --success: 142 76% 36%;
     --success-foreground: 0 0% 100%;
 
     --warning: 38 92% 50%;
     --warning-foreground: 0 0% 100%;
 
-    --muted: 214 32% 95%;
-    --muted-foreground: 213 13% 56%;
+    --muted: 210 40% 96%;
+    --muted-foreground: 210 6% 46%;
 
-    --accent: 268 83% 57%;
-    --accent-foreground: 0 0% 100%;
-    --accent-light: 268 83% 92%;
+    --accent: 210 40% 96%;
+    --accent-foreground: 210 6% 21%;
+    --accent-light: 210 40% 98%;
 
     --destructive: 0 84% 60%;
-    --destructive-foreground: 210 40% 98%;
+    --destructive-foreground: 0 0% 100%;
 
     --border: 214 32% 91%;
-    --input: 214 32% 91%;
-    --ring: 214 88% 27%;
+    --input: 210 40% 96%;
+    --ring: 221 83% 53%;
 
-    /* Study app specific colors */
-    --focus: 214 88% 27%;
-    --focus-light: 214 88% 85%;
-    --progress: 158 64% 52%;
-    --progress-light: 158 64% 90%;
+    /* Study app specific colors - soft and minimalist */
+    --focus: 221 83% 53%;
+    --focus-light: 221 83% 95%;
+    --progress: 142 76% 36%;
+    --progress-light: 142 76% 90%;
     --energy: 38 92% 50%;
     --energy-light: 38 92% 90%;
 
-    /* Gradients */
-    --gradient-primary: linear-gradient(135deg, hsl(214 88% 27%), hsl(268 83% 57%));
-    --gradient-secondary: linear-gradient(135deg, hsl(158 64% 52%), hsl(214 88% 27%));
-    --gradient-subtle: linear-gradient(180deg, hsl(248 50% 98%), hsl(214 32% 95%));
-    --gradient-card: linear-gradient(145deg, hsl(0 0% 100%), hsl(214 32% 98%));
+    /* Task priority colors - Google Calendar inspired */
+    --priority-high: 0 84% 60%;
+    --priority-medium: 38 92% 50%;
+    --priority-low: 142 76% 36%;
+    --priority-none: 210 6% 46%;
 
-    /* Shadows */
-    --shadow-primary: 0 4px 20px hsl(214 88% 27% / 0.15);
-    --shadow-card: 0 2px 10px hsl(213 27% 14% / 0.08);
-    --shadow-focus: 0 0 0 3px hsl(214 88% 27% / 0.2);
+    /* Gradients - minimal and soft */
+    --gradient-primary: linear-gradient(135deg, hsl(221 83% 53%), hsl(221 83% 60%));
+    --gradient-secondary: linear-gradient(135deg, hsl(210 40% 96%), hsl(210 40% 98%));
+    --gradient-subtle: linear-gradient(180deg, hsl(0 0% 99%), hsl(210 40% 98%));
+    --gradient-card: linear-gradient(145deg, hsl(0 0% 100%), hsl(210 40% 99%));
+
+    /* Shadows - soft and minimal */
+    --shadow-primary: 0 1px 3px hsl(221 83% 53% / 0.12);
+    --shadow-card: 0 1px 3px hsl(210 6% 21% / 0.04), 0 4px 6px hsl(210 6% 21% / 0.02);
+    --shadow-focus: 0 0 0 3px hsl(221 83% 53% / 0.12);
 
     --radius: 0.5rem;
 
@@ -128,25 +134,34 @@ All colors MUST be HSL.
   }
 
   body {
-    @apply bg-gradient-subtle text-foreground font-sans;
+    @apply bg-background text-foreground font-sans;
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
   }
 }
 
 @layer components {
   .btn-primary {
-    @apply bg-primary text-primary-foreground hover:bg-primary/90 shadow-primary transition-all duration-200;
+    @apply bg-primary text-primary-foreground hover:bg-primary/90 shadow-sm transition-all duration-200;
   }
   
   .btn-secondary {
-    @apply bg-secondary text-secondary-foreground hover:bg-secondary/90 transition-all duration-200;
+    @apply bg-secondary text-secondary-foreground hover:bg-secondary/50 transition-all duration-200;
   }
   
-  .card-study {
-    @apply bg-gradient-card shadow-card border border-border/50 backdrop-blur-sm;
+  .card-minimal {
+    @apply bg-card shadow-card border border-border rounded-lg transition-all duration-200 hover:shadow-lg;
   }
   
   .focus-ring {
-    @apply focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2;
+    @apply focus:outline-none focus:ring-2 focus:ring-primary/20 focus:ring-offset-1;
+  }
+  
+  .task-card {
+    @apply card-minimal p-4 cursor-pointer hover:border-primary/20;
+  }
+  
+  .study-block {
+    @apply card-minimal p-3 rounded-md border-l-4 border-l-primary;
   }
 }
 

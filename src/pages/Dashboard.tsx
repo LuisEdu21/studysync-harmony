@@ -112,19 +112,19 @@ const Dashboard = () => {
   return (
     <div className="space-y-8">
       {/* Welcome Section */}
-      <Card className="card-study p-6 bg-gradient-primary text-white">
+      <Card className="p-6 bg-primary text-primary-foreground">
         <div className="flex items-center justify-between">
           <div>
-            <h1 className="text-2xl font-bold mb-2">
-              Olá, {user?.user_metadata?.full_name || user?.email}! 📚
+            <h1 className="text-2xl font-semibold mb-2">
+              Olá, {user?.user_metadata?.full_name || user?.email?.split('@')[0]}! 
             </h1>
-            <p className="text-white/90">
+            <p className="text-primary-foreground/90">
               Você já estudou {Math.floor(studyTime / 60)}h {studyTime % 60}min hoje. Continue assim!
             </p>
           </div>
           <div className="text-right">
-            <div className="text-3xl font-bold">{streakDays}</div>
-            <div className="text-sm text-white/80">dias seguidos</div>
+            <div className="text-3xl font-semibold">{streakDays}</div>
+            <div className="text-sm text-primary-foreground/80">dias seguidos</div>
           </div>
         </div>
       </Card>

@@ -63,57 +63,49 @@ const StudyPlan = () => {
       </div>
 
       {/* Overview Cards */}
-      <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
-        <Card className="card-study">
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Tempo Total</CardTitle>
-            <Clock className="h-4 w-4 text-muted-foreground" />
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold">{Math.floor(totalEstimatedTime / 60)}h {totalEstimatedTime % 60}m</div>
-            <p className="text-xs text-muted-foreground">
-              Esta semana
-            </p>
-          </CardContent>
+      <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+        <Card className="p-4">
+          <div className="flex items-center justify-between">
+            <div>
+              <p className="text-sm font-medium text-muted-foreground">Tempo Total</p>
+              <p className="text-2xl font-semibold">{Math.floor(totalEstimatedTime / 60)}h {totalEstimatedTime % 60}m</p>
+            </div>
+            <Clock className="h-8 w-8 text-muted-foreground" />
+          </div>
+          <p className="text-xs text-muted-foreground mt-2">Esta semana</p>
         </Card>
 
-        <Card className="card-study">
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Dificuldade Média</CardTitle>
-            <Brain className="h-4 w-4 text-muted-foreground" />
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold">{averageDifficulty.toFixed(1)}/5</div>
-            <p className="text-xs text-muted-foreground">
-              Nível de complexidade
-            </p>
-          </CardContent>
+        <Card className="p-4">
+          <div className="flex items-center justify-between">
+            <div>
+              <p className="text-sm font-medium text-muted-foreground">Dificuldade Média</p>
+              <p className="text-2xl font-semibold">{averageDifficulty.toFixed(1)}/5</p>
+            </div>
+            <Brain className="h-8 w-8 text-muted-foreground" />
+          </div>
+          <p className="text-xs text-muted-foreground mt-2">Nível de complexidade</p>
         </Card>
 
-        <Card className="card-study">
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Prioridade Alta</CardTitle>
-            <Target className="h-4 w-4 text-muted-foreground" />
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold">{highPriorityTasks}</div>
-            <p className="text-xs text-muted-foreground">
-              Tarefas urgentes
-            </p>
-          </CardContent>
+        <Card className="p-4">
+          <div className="flex items-center justify-between">
+            <div>
+              <p className="text-sm font-medium text-muted-foreground">Prioridade Alta</p>
+              <p className="text-2xl font-semibold">{highPriorityTasks}</p>
+            </div>
+            <Target className="h-8 w-8 text-muted-foreground" />
+          </div>
+          <p className="text-xs text-muted-foreground mt-2">Tarefas urgentes</p>
         </Card>
 
-        <Card className="card-study">
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Progresso</CardTitle>
-            <TrendingUp className="h-4 w-4 text-muted-foreground" />
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold">85%</div>
-            <p className="text-xs text-muted-foreground">
-              Meta semanal
-            </p>
-          </CardContent>
+        <Card className="p-4">
+          <div className="flex items-center justify-between">
+            <div>
+              <p className="text-sm font-medium text-muted-foreground">Progresso</p>
+              <p className="text-2xl font-semibold">85%</p>
+            </div>
+            <TrendingUp className="h-8 w-8 text-muted-foreground" />
+          </div>
+          <p className="text-xs text-muted-foreground mt-2">Meta semanal</p>
         </Card>
       </div>
 

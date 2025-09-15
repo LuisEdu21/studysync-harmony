@@ -114,81 +114,72 @@ const Tasks = () => {
       </div>
 
       {/* Overview Cards */}
-      <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
-        <Card className="card-study">
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Total</CardTitle>
-            <Clock className="h-4 w-4 text-muted-foreground" />
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold">{tasks.length}</div>
-            <p className="text-xs text-muted-foreground">
-              Tarefas criadas
-            </p>
-          </CardContent>
+      <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+        <Card className="p-4">
+          <div className="flex items-center justify-between">
+            <div>
+              <p className="text-sm font-medium text-muted-foreground">Total</p>
+              <p className="text-2xl font-semibold">{tasks.length}</p>
+            </div>
+            <Clock className="h-8 w-8 text-muted-foreground" />
+          </div>
+          <p className="text-xs text-muted-foreground mt-2">Tarefas criadas</p>
         </Card>
 
-        <Card className="card-study">
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Concluídas</CardTitle>
-            <CheckCircle className="h-4 w-4 text-success" />
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold text-success">{completedTasks.length}</div>
-            <p className="text-xs text-muted-foreground">
-              Tarefas finalizadas
-            </p>
-          </CardContent>
+        <Card className="p-4">
+          <div className="flex items-center justify-between">
+            <div>
+              <p className="text-sm font-medium text-muted-foreground">Concluídas</p>
+              <p className="text-2xl font-semibold text-success">{completedTasks.length}</p>
+            </div>
+            <CheckCircle className="h-8 w-8 text-success" />
+          </div>
+          <p className="text-xs text-muted-foreground mt-2">Tarefas finalizadas</p>
         </Card>
 
-        <Card className="card-study">
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Pendentes</CardTitle>
-            <Clock className="h-4 w-4 text-warning" />
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold text-warning">{pendingTasks.length}</div>
-            <p className="text-xs text-muted-foreground">
-              Para fazer
-            </p>
-          </CardContent>
+        <Card className="p-4">
+          <div className="flex items-center justify-between">
+            <div>
+              <p className="text-sm font-medium text-muted-foreground">Pendentes</p>
+              <p className="text-2xl font-semibold text-warning">{pendingTasks.length}</p>
+            </div>
+            <Clock className="h-8 w-8 text-warning" />
+          </div>
+          <p className="text-xs text-muted-foreground mt-2">Para fazer</p>
         </Card>
 
-        <Card className="card-study">
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Atrasadas</CardTitle>
-            <AlertTriangle className="h-4 w-4 text-destructive" />
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold text-destructive">{overdueTasks.length}</div>
-            <p className="text-xs text-muted-foreground">
-              Vencidas
-            </p>
-          </CardContent>
+        <Card className="p-4">
+          <div className="flex items-center justify-between">
+            <div>
+              <p className="text-sm font-medium text-muted-foreground">Atrasadas</p>
+              <p className="text-2xl font-semibold text-destructive">{overdueTasks.length}</p>
+            </div>
+            <AlertTriangle className="h-8 w-8 text-destructive" />
+          </div>
+          <p className="text-xs text-muted-foreground mt-2">Vencidas</p>
         </Card>
       </div>
 
       {/* High Priority Tasks Alert */}
       {highPriorityTasks.length > 0 && (
-        <Card className="card-study border-warning/50 bg-warning/5">
-          <CardHeader>
-            <CardTitle className="text-warning flex items-center gap-2">
-              <AlertTriangle className="w-5 h-5" />
-              Tarefas de Alta Prioridade
-            </CardTitle>
-          </CardHeader>
-          <CardContent>
-            <p className="text-sm text-muted-foreground mb-3">
-              Você tem {highPriorityTasks.length} tarefa(s) de alta prioridade que precisam de atenção:
-            </p>
-            <ul className="space-y-1">
-              {highPriorityTasks.map((task) => (
-                <li key={task.id} className="text-sm">
-                  • {task.title} - {task.subject} (prazo: {new Date(task.dueDate).toLocaleDateString('pt-BR')})
-                </li>
-              ))}
-            </ul>
-          </CardContent>
+        <Card className="p-4 border-warning/20 bg-warning/5">
+          <div className="flex items-center gap-3 mb-3">
+            <AlertTriangle className="w-5 h-5 text-warning" />
+            <h3 className="font-medium text-warning">Tarefas de Alta Prioridade</h3>
+          </div>
+          <p className="text-sm text-muted-foreground mb-3">
+            Você tem {highPriorityTasks.length} tarefa(s) de alta prioridade que precisam de atenção:
+          </p>
+          <div className="space-y-2">
+            {highPriorityTasks.map((task) => (
+              <div key={task.id} className="flex items-center justify-between p-2 bg-warning/10 rounded text-sm">
+                <span>{task.title} - {task.subject}</span>
+                <span className="text-xs text-muted-foreground">
+                  {new Date(task.dueDate).toLocaleDateString('pt-BR')}
+                </span>
+              </div>
+            ))}
+          </div>
         </Card>
       )}
 
