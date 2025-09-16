@@ -2,7 +2,7 @@ import { useState, useEffect, useRef } from 'react';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
 import { Progress } from '@/components/ui/progress';
-import { Play, Pause, RotateCcw, Coffee } from 'lucide-react';
+import { Play, Pause, RotateCcw, Coffee, BookOpen } from 'lucide-react';
 
 interface StudyTimerProps {
   onSessionComplete?: (type: 'study' | 'break', duration: number) => void;
@@ -127,7 +127,7 @@ export const StudyTimer = ({ onSessionComplete }: StudyTimerProps) => {
             variant="outline"
             className="border-border hover:bg-muted"
           >
-            {sessionType === 'study' ? <Coffee className="w-5 h-5" /> : <Play className="w-5 h-5" />}
+            {sessionType === 'study' ? <Coffee className="w-5 h-5" /> : <BookOpen className="w-5 h-5" />}
           </Button>
         </div>
 
