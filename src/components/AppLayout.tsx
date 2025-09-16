@@ -5,6 +5,7 @@ import { GraduationCap, Settings, Bell, User, LogOut } from 'lucide-react';
 import { useAuth } from '@/contexts/AuthContext';
 import { SettingsModal } from '@/components/SettingsModal';
 import BottomNavigation from '@/components/BottomNavigation';
+import DesktopNavigation from '@/components/DesktopNavigation';
 import { useToast } from '@/hooks/use-toast';
 
 const AppLayout = () => {
@@ -25,14 +26,19 @@ const AppLayout = () => {
       <header className="bg-card/80 backdrop-blur-sm border-b border-border sticky top-0 z-40">
         <div className="container mx-auto px-4 py-4">
           <div className="flex items-center justify-between">
-            <div className="flex items-center gap-3">
-              <div className="w-10 h-10 bg-gradient-primary rounded-lg flex items-center justify-center">
-                <GraduationCap className="w-6 h-6 text-white" />
+            <div className="flex items-center gap-8">
+              <div className="flex items-center gap-3">
+                <div className="w-10 h-10 bg-gradient-primary rounded-lg flex items-center justify-center">
+                  <GraduationCap className="w-6 h-6 text-white" />
+                </div>
+                <div>
+                  <h1 className="text-xl font-bold">StudyFlow</h1>
+                  <p className="text-sm text-muted-foreground">Organize seus estudos</p>
+                </div>
               </div>
-              <div>
-                <h1 className="text-xl font-bold">StudyFlow</h1>
-                <p className="text-sm text-muted-foreground">Organize seus estudos</p>
-              </div>
+              
+              {/* Desktop Navigation */}
+              <DesktopNavigation />
             </div>
             
             <div className="flex items-center gap-2">
