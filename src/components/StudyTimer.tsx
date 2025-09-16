@@ -107,7 +107,7 @@ export const StudyTimer = ({ onSessionComplete }: StudyTimerProps) => {
           <Button
             onClick={handleStartPause}
             size="lg"
-            className={`btn-primary ${sessionType === 'study' ? 'bg-focus hover:bg-focus/90' : 'bg-secondary hover:bg-secondary/90'}`}
+            className="btn-primary bg-focus hover:bg-focus/90"
           >
             {isRunning ? <Pause className="w-5 h-5" /> : <Play className="w-5 h-5" />}
           </Button>
