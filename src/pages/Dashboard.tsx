@@ -16,6 +16,7 @@ import { useUserProfile } from '@/hooks/useUserProfile';
 import { useRealTasks } from '@/hooks/useRealTasks';
 import { useStudySessions } from '@/hooks/useStudySessions';
 import { useStudyStats } from '@/hooks/useStudyStats';
+import { useStudyEvents } from '@/hooks/useStudyEvents';
 
 interface Task {
   id: string;
@@ -28,15 +29,6 @@ interface Task {
   difficulty?: number;
 }
 
-interface StudyEvent {
-  id: string;
-  title: string;
-  subject: string;
-  date: string;
-  time: string;
-  duration: number;
-  type: 'study' | 'exam' | 'assignment';
-}
 
 const Dashboard = () => {
   const { user } = useAuth();
@@ -44,18 +36,7 @@ const Dashboard = () => {
   const { tasks } = useRealTasks();
   const { addSession } = useStudySessions();
   const { todayStats } = useStudyStats();
-
-  const [studyEvents, setStudyEvents] = useState<StudyEvent[]>([
-    {
-      id: '1',
-      title: 'Prova de Cálculo',
-      subject: 'Matemática',
-      date: '2024-12-20',
-      time: '14:00',
-      duration: 120,
-      type: 'exam'
-    }
-  ]);
+  const { events: studyEvents, addEvent } = useStudyEvents();
 
   // Get real data from hooks
   const studyTime = todayStats?.total_study_minutes || 0;
@@ -257,17 +238,17 @@ const Dashboard = () => {
       <StudyEventCreator
         open={eventCreatorOpen}
         onOpenChange={setEventCreatorOpen}
-        onEventCreated={(event) => {
+        onEventCreated={async (event) => {
           const newEvent = {
-            id: Date.now().toString(),
             title: event.title,
             subject: event.subject || '',
             date: event.startTime.split('T')[0],
             time: event.startTime.split('T')[1]?.substring(0, 5) || '',
             duration: Math.round((new Date(event.endTime).getTime() - new Date(event.startTime).getTime()) / 60000),
-            type: 'study' as const
+            type: 'study' as const,
+            description: event.description
           };
-          setStudyEvents(prev => [...prev, newEvent]);
+          await addEvent(newEvent);
         }}
       />
     </div>

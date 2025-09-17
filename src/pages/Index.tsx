@@ -12,6 +12,7 @@ import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
 import { GraduationCap, Settings, Bell, User } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
+import { useStudyEvents } from '@/hooks/useStudyEvents';
 import { useSettings } from '@/contexts/SettingsContext';
 
 interface Task {
@@ -25,15 +26,6 @@ interface Task {
   difficulty?: number;
 }
 
-interface StudyEvent {
-  id: string;
-  title: string;
-  subject: string;
-  date: string;
-  time: string;
-  duration: number;
-  type: 'study' | 'exam' | 'assignment';
-}
 
 const Index = () => {
   const [tasks, setTasks] = useState<Task[]>([
@@ -69,35 +61,7 @@ const Index = () => {
     }
   ]);
 
-  const [studyEvents, setStudyEvents] = useState<StudyEvent[]>([
-    {
-      id: '1',
-      title: 'Prova de Cálculo',
-      subject: 'Matemática',
-      date: '2024-12-20',
-      time: '14:00',
-      duration: 120,
-      type: 'exam'
-    },
-    {
-      id: '2',
-      title: 'Sessão de Estudo - Física',
-      subject: 'Física',
-      date: '2024-12-19',
-      time: '16:00',
-      duration: 90,
-      type: 'study'
-    },
-    {
-      id: '3',
-      title: 'Entrega do Relatório',
-      subject: 'Física',
-      date: '2024-12-22',
-      time: '23:59',
-      duration: 0,
-      type: 'assignment'
-    }
-  ]);
+  const { events: studyEvents, addEvent } = useStudyEvents();
 
   const [studyTime, setStudyTime] = useState(125); // minutes studied today
   const [weeklyGoal] = useState(600); // 10 hours per week
@@ -302,18 +266,17 @@ const Index = () => {
       <StudyEventCreator
         open={eventCreatorOpen}
         onOpenChange={setEventCreatorOpen}
-        onEventCreated={(event) => {
-          // Add event to local state
+        onEventCreated={async (event) => {
           const newEvent = {
-            id: Date.now().toString(),
             title: event.title,
             subject: event.subject || '',
             date: event.startTime.split('T')[0],
             time: event.startTime.split('T')[1]?.substring(0, 5) || '',
             duration: Math.round((new Date(event.endTime).getTime() - new Date(event.startTime).getTime()) / 60000),
-            type: 'study' as const
+            type: 'study' as const,
+            description: event.description
           };
-          setStudyEvents(prev => [...prev, newEvent]);
+          await addEvent(newEvent);
         }}
       />
     </div>
