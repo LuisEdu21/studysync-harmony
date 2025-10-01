@@ -91,11 +91,21 @@ export const useStudyEvents = () => {
           external_id: `internal_${Date.now()}`
         })
         .select()
-        .single();
+        .maybeSingle();
 
       if (error) {
         console.error('Supabase error:', error);
         throw error;
+      }
+
+      if (!data) {
+        console.warn('Insert returned no data, refetching...');
+        await fetchEvents();
+        toast({
+          title: 'Evento criado!',
+          description: `${eventData.title} foi adicionado ao seu calendário.`,
+        });
+        return;
       }
 
       console.log('Event created successfully:', data);
