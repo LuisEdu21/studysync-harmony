@@ -34,6 +34,7 @@ export const StudyEventCreator: React.FC<StudyEventCreatorProps> = ({
     date: '',
     startTime: '',
     duration: 60, // minutes
+    type: 'study' as 'study' | 'exam' | 'assignment',
     syncToCalendars: hasAnyCalendarEnabled,
     selectedProviders: {
       google: settings.googleCalendar.enabled,
@@ -64,6 +65,7 @@ export const StudyEventCreator: React.FC<StudyEventCreatorProps> = ({
         startTime: startDateTime.toISOString(),
         endTime: endDateTime.toISOString(),
         subject: formData.subject,
+        type: formData.type,
       };
 
       // Sync to external calendars if enabled
@@ -93,6 +95,7 @@ export const StudyEventCreator: React.FC<StudyEventCreatorProps> = ({
         date: '',
         startTime: '',
         duration: 60,
+        type: 'study',
         syncToCalendars: hasAnyCalendarEnabled,
         selectedProviders: {
           google: settings.googleCalendar.enabled,
@@ -120,6 +123,7 @@ export const StudyEventCreator: React.FC<StudyEventCreatorProps> = ({
       date: '',
       startTime: '',
       duration: 60,
+      type: 'study',
       syncToCalendars: hasAnyCalendarEnabled,
       selectedProviders: {
         google: settings.googleCalendar.enabled,
@@ -150,6 +154,26 @@ export const StudyEventCreator: React.FC<StudyEventCreatorProps> = ({
               placeholder="Ex: Estudar Matemática - Cálculo"
               required
             />
+          </div>
+
+          {/* Type */}
+          <div className="space-y-2">
+            <Label htmlFor="type">Tipo de Evento *</Label>
+            <Select
+              value={formData.type}
+              onValueChange={(value: 'study' | 'exam' | 'assignment') => 
+                setFormData(prev => ({ ...prev, type: value }))
+              }
+            >
+              <SelectTrigger>
+                <SelectValue />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="study">📚 Estudo</SelectItem>
+                <SelectItem value="exam">📝 Prova</SelectItem>
+                <SelectItem value="assignment">📋 Trabalho</SelectItem>
+              </SelectContent>
+            </Select>
           </div>
 
           {/* Subject */}

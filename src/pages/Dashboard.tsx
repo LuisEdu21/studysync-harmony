@@ -245,7 +245,7 @@ const Dashboard = () => {
             date: event.startTime.split('T')[0],
             time: event.startTime.split('T')[1]?.substring(0, 5) || '',
             duration: Math.round((new Date(event.endTime).getTime() - new Date(event.startTime).getTime()) / 60000),
-            type: 'study' as const,
+            type: event.type || 'study',
             description: event.description
           };
           await addEvent(newEvent);
