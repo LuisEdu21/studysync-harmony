@@ -64,11 +64,18 @@ export const useStudyEvents = () => {
   };
 
   const addEvent = async (eventData: Omit<StudyEvent, 'id'>) => {
-    if (!user) return;
+    if (!user) {
+      console.error('No user found');
+      return;
+    }
 
     try {
+      console.log('Creating event with data:', eventData);
       const startDateTime = new Date(`${eventData.date}T${eventData.time}`);
       const endDateTime = new Date(startDateTime.getTime() + eventData.duration * 60000);
+
+      console.log('Start time:', startDateTime.toISOString());
+      console.log('End time:', endDateTime.toISOString());
 
       const { data, error } = await supabase
         .from('calendar_events')
@@ -86,7 +93,12 @@ export const useStudyEvents = () => {
         .select()
         .single();
 
-      if (error) throw error;
+      if (error) {
+        console.error('Supabase error:', error);
+        throw error;
+      }
+
+      console.log('Event created successfully:', data);
 
       const newEvent: StudyEvent = {
         id: data.id,
@@ -110,10 +122,11 @@ export const useStudyEvents = () => {
     } catch (error) {
       console.error('Error adding study event:', error);
       toast({
-        title: 'Erro',
-        description: 'Não foi possível criar o evento de estudo.',
+        title: 'Erro ao criar evento',
+        description: error instanceof Error ? error.message : 'Não foi possível criar o evento de estudo.',
         variant: 'destructive'
       });
+      throw error;
     }
   };
 

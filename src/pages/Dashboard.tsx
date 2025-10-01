@@ -239,16 +239,22 @@ const Dashboard = () => {
         open={eventCreatorOpen}
         onOpenChange={setEventCreatorOpen}
         onEventCreated={async (event) => {
-          const newEvent = {
-            title: event.title,
-            subject: event.subject || '',
-            date: event.startTime.split('T')[0],
-            time: event.startTime.split('T')[1]?.substring(0, 5) || '',
-            duration: Math.round((new Date(event.endTime).getTime() - new Date(event.startTime).getTime()) / 60000),
-            type: event.type || 'study',
-            description: event.description
-          };
-          await addEvent(newEvent);
+          try {
+            console.log('Dashboard received event:', event);
+            const newEvent = {
+              title: event.title,
+              subject: event.subject || '',
+              date: event.startTime.split('T')[0],
+              time: event.startTime.split('T')[1]?.substring(0, 5) || '',
+              duration: Math.round((new Date(event.endTime).getTime() - new Date(event.startTime).getTime()) / 60000),
+              type: event.type || 'study' as 'study' | 'exam' | 'assignment',
+              description: event.description
+            };
+            console.log('Calling addEvent with:', newEvent);
+            await addEvent(newEvent);
+          } catch (error) {
+            console.error('Error in Dashboard onEventCreated:', error);
+          }
         }}
       />
     </div>
