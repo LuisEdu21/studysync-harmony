@@ -5,12 +5,8 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Switch } from '@/components/ui/switch';
-import { Card, CardContent } from '@/components/ui/card';
-import { Calendar, Clock, Plus } from 'lucide-react';
+import { Clock, Plus } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
-import { useCalendarIntegration } from '@/hooks/useCalendarIntegration';
-import { useSettings } from '@/contexts/SettingsContext';
 
 interface StudyEventCreatorProps {
   open: boolean;
@@ -24,8 +20,6 @@ export const StudyEventCreator: React.FC<StudyEventCreatorProps> = ({
   onEventCreated 
 }) => {
   const { toast } = useToast();
-  const { createEvent, isLoading } = useCalendarIntegration();
-  const { settings, hasAnyCalendarEnabled } = useSettings();
 
   const [formData, setFormData] = useState({
     title: '',
@@ -35,11 +29,6 @@ export const StudyEventCreator: React.FC<StudyEventCreatorProps> = ({
     startTime: '',
     duration: 60, // minutes
     type: 'study' as 'study' | 'exam' | 'assignment',
-    syncToCalendars: hasAnyCalendarEnabled,
-    selectedProviders: {
-      google: settings.googleCalendar.enabled,
-      microsoft: settings.outlookCalendar.enabled,
-    }
   });
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -55,7 +44,6 @@ export const StudyEventCreator: React.FC<StudyEventCreatorProps> = ({
     }
 
     try {
-      // Create local event
       const startDateTime = new Date(`${formData.date}T${formData.startTime}`);
       const endDateTime = new Date(startDateTime.getTime() + formData.duration * 60000);
 
@@ -65,29 +53,11 @@ export const StudyEventCreator: React.FC<StudyEventCreatorProps> = ({
         startTime: startDateTime.toISOString(),
         endTime: endDateTime.toISOString(),
         subject: formData.subject,
-        type: formData.type,
+        eventType: formData.type,
       };
 
-      // Sync to external calendars if enabled
-      if (formData.syncToCalendars && hasAnyCalendarEnabled) {
-        const providers: Array<'google' | 'microsoft'> = [];
-        
-        if (formData.selectedProviders.google && settings.googleCalendar.enabled) {
-          providers.push('google');
-        }
-        if (formData.selectedProviders.microsoft && settings.outlookCalendar.enabled) {
-          providers.push('microsoft');
-        }
-
-        for (const provider of providers) {
-          await createEvent(eventData, provider);
-        }
-      }
-
-      // Call parent callback
       onEventCreated?.(eventData);
 
-      // Reset form
       setFormData({
         title: '',
         subject: '',
@@ -96,11 +66,6 @@ export const StudyEventCreator: React.FC<StudyEventCreatorProps> = ({
         startTime: '',
         duration: 60,
         type: 'study',
-        syncToCalendars: hasAnyCalendarEnabled,
-        selectedProviders: {
-          google: settings.googleCalendar.enabled,
-          microsoft: settings.outlookCalendar.enabled,
-        }
       });
 
       onOpenChange(false);
@@ -124,11 +89,6 @@ export const StudyEventCreator: React.FC<StudyEventCreatorProps> = ({
       startTime: '',
       duration: 60,
       type: 'study',
-      syncToCalendars: hasAnyCalendarEnabled,
-      selectedProviders: {
-        google: settings.googleCalendar.enabled,
-        microsoft: settings.outlookCalendar.enabled,
-      }
     });
     onOpenChange(false);
   };
@@ -243,76 +203,18 @@ export const StudyEventCreator: React.FC<StudyEventCreatorProps> = ({
               </SelectContent>
             </Select>
           </div>
-
-          {/* Calendar Sync Options */}
-          {hasAnyCalendarEnabled && (
-            <Card className="border-primary/20 bg-primary/5">
-              <CardContent className="pt-4 space-y-3">
-                <div className="flex items-center justify-between">
-                  <div className="flex items-center gap-2">
-                    <Calendar className="w-4 h-4" />
-                    <Label htmlFor="sync">Sincronizar com calendários externos</Label>
-                  </div>
-                  <Switch
-                    id="sync"
-                    checked={formData.syncToCalendars}
-                    onCheckedChange={(checked) => 
-                      setFormData(prev => ({ ...prev, syncToCalendars: checked }))
-                    }
-                  />
-                </div>
-
-                {formData.syncToCalendars && (
-                  <div className="space-y-2 ml-6">
-                    {settings.googleCalendar.enabled && (
-                      <div className="flex items-center justify-between">
-                        <Label htmlFor="google">Google Calendar</Label>
-                        <Switch
-                          id="google"
-                          checked={formData.selectedProviders.google}
-                          onCheckedChange={(checked) => 
-                            setFormData(prev => ({
-                              ...prev,
-                              selectedProviders: { ...prev.selectedProviders, google: checked }
-                            }))
-                          }
-                        />
-                      </div>
-                    )}
-
-                    {settings.outlookCalendar.enabled && (
-                      <div className="flex items-center justify-between">
-                        <Label htmlFor="outlook">Outlook Calendar</Label>
-                        <Switch
-                          id="outlook"
-                          checked={formData.selectedProviders.microsoft}
-                          onCheckedChange={(checked) => 
-                            setFormData(prev => ({
-                              ...prev,
-                              selectedProviders: { ...prev.selectedProviders, microsoft: checked }
-                            }))
-                          }
-                        />
-                      </div>
-                    )}
-                  </div>
-                )}
-              </CardContent>
-            </Card>
-          )}
         </form>
 
         <DialogFooter>
-          <Button variant="outline" onClick={handleCancel} disabled={isLoading}>
+          <Button variant="outline" onClick={handleCancel}>
             Cancelar
           </Button>
           <Button 
             onClick={handleSubmit} 
-            disabled={isLoading}
             className="flex items-center gap-2"
           >
             <Clock className="w-4 h-4" />
-            {isLoading ? 'Criando...' : 'Criar Sessão'}
+            Criar Sessão
           </Button>
         </DialogFooter>
       </DialogContent>

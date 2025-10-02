@@ -9,7 +9,6 @@ import Dashboard from "./pages/Dashboard";
 import StudyPlan from "./pages/StudyPlan";
 import Tasks from "./pages/Tasks";
 import NotFound from "./pages/NotFound";
-import AuthCallback from "./pages/AuthCallback";
 import AppLayout from "./components/AppLayout";
 
 const queryClient = new QueryClient();
@@ -42,7 +41,6 @@ const App = () => (
       <BrowserRouter>
         <Routes>
           <Route path="/login" element={<Login />} />
-          <Route path="/auth/callback" element={<AuthCallback />} />
           <Route path="/" element={
             <ProtectedRoute>
               <AppLayout />

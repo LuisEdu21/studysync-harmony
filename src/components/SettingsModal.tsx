@@ -6,10 +6,8 @@ import {
   DialogHeader,
   DialogTitle,
 } from '@/components/ui/dialog';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { CalendarIntegrationCard } from './CalendarIntegrationCard';
 import { NotificationSettings } from './NotificationSettings';
-import { Settings, Calendar, Bell } from 'lucide-react';
+import { Settings, Bell } from 'lucide-react';
 import { useSmartReminders } from '@/hooks/useSmartReminders';
 
 interface SettingsModalProps {
@@ -27,8 +25,6 @@ export const SettingsModal = ({
   sessions = [],
   onRescheduleSession 
 }: SettingsModalProps) => {
-  const [activeTab, setActiveTab] = useState('calendar');
-  
   const {
     settings: reminderSettings,
     setSettings: setReminderSettings,
@@ -46,38 +42,19 @@ export const SettingsModal = ({
             Configurações
           </DialogTitle>
           <DialogDescription>
-            Gerencie suas integrações de calendário e preferências de notificação
+            Gerencie suas preferências de notificação
           </DialogDescription>
         </DialogHeader>
 
-        <Tabs value={activeTab} onValueChange={setActiveTab} className="flex-1">
-          <TabsList className="grid w-full grid-cols-2">
-            <TabsTrigger value="calendar" className="flex items-center gap-2">
-              <Calendar className="w-4 h-4" />
-              Calendários
-            </TabsTrigger>
-            <TabsTrigger value="notifications" className="flex items-center gap-2">
-              <Bell className="w-4 h-4" />
-              Notificações
-            </TabsTrigger>
-          </TabsList>
-
-          <div className="overflow-y-auto max-h-[calc(85vh-12rem)] mt-4">
-            <TabsContent value="calendar" className="mt-6">
-              <CalendarIntegrationCard onOpenSettings={() => {}} />
-            </TabsContent>
-
-            <TabsContent value="notifications" className="mt-6">
-              <NotificationSettings
-                settings={reminderSettings}
-                onSettingsChange={setReminderSettings}
-                permissionGranted={permissionGranted}
-                onRequestPermission={requestNotificationPermission}
-                activeRemindersCount={activeReminders.length}
-              />
-            </TabsContent>
-          </div>
-        </Tabs>
+        <div className="overflow-y-auto max-h-[calc(85vh-12rem)] mt-4">
+          <NotificationSettings
+            settings={reminderSettings}
+            onSettingsChange={setReminderSettings}
+            permissionGranted={permissionGranted}
+            onRequestPermission={requestNotificationPermission}
+            activeRemindersCount={activeReminders.length}
+          />
+        </div>
       </DialogContent>
     </Dialog>
   );

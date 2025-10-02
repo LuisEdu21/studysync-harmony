@@ -3,7 +3,6 @@ import { StudyTimer } from '@/components/StudyTimer';
 import { TaskList } from '@/components/TaskList';
 import { StudyStats } from '@/components/StudyStats';
 import { StudyCalendar } from '@/components/StudyCalendar';
-import { CalendarIntegrationCard } from '@/components/CalendarIntegrationCard';
 import { SettingsModal } from '@/components/SettingsModal';
 import { StudyEventCreator } from '@/components/StudyEventCreator';
 import { StudyPlanner } from '@/components/StudyPlanner';
@@ -13,7 +12,6 @@ import { Card } from '@/components/ui/card';
 import { GraduationCap, Settings, Bell, User } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import { useStudyEvents } from '@/hooks/useStudyEvents';
-import { useSettings } from '@/contexts/SettingsContext';
 
 interface Task {
   id: string;
@@ -70,7 +68,6 @@ const Index = () => {
   const [eventCreatorOpen, setEventCreatorOpen] = useState(false);
 
   const { toast } = useToast();
-  const { hasAnyCalendarEnabled } = useSettings();
 
   // Initialize smart reminders
   const {
@@ -228,7 +225,6 @@ const Index = () => {
               }}
               onCreateEvent={() => setEventCreatorOpen(true)}
             />
-            <CalendarIntegrationCard onOpenSettings={() => setSettingsModalOpen(true)} />
           </div>
 
           {/* Right Column */}
@@ -273,7 +269,7 @@ const Index = () => {
             date: event.startTime.split('T')[0],
             time: event.startTime.split('T')[1]?.substring(0, 5) || '',
             duration: Math.round((new Date(event.endTime).getTime() - new Date(event.startTime).getTime()) / 60000),
-            type: 'study' as const,
+            type: event.eventType || 'study',
             description: event.description
           };
           await addEvent(newEvent);
