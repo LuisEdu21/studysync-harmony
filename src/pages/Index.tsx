@@ -6,6 +6,7 @@ import { StudyCalendar } from '@/components/StudyCalendar';
 import { SettingsModal } from '@/components/SettingsModal';
 import { StudyEventCreator } from '@/components/StudyEventCreator';
 import { StudyPlanner } from '@/components/StudyPlanner';
+import { CalendarImport } from '@/components/CalendarImport';
 import { useSmartReminders } from '@/hooks/useSmartReminders';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
@@ -137,6 +138,12 @@ const Index = () => {
     }
   };
 
+  const handleBulkImport = async (importedEvents: any[]) => {
+    for (const event of importedEvents) {
+      await addEvent(event);
+    }
+  };
+
   const completedTasks = tasks.filter(task => task.completed).length;
   const totalTasks = tasks.length;
 
@@ -229,6 +236,7 @@ const Index = () => {
 
           {/* Right Column */}
           <div className="space-y-8">
+            <CalendarImport onImport={handleBulkImport} />
             <StudyPlanner 
               tasks={tasks.map(t => ({ ...t, difficulty: t.difficulty || 3 }))}
               onTaskUpdate={(updatedTasks) => setTasks(updatedTasks)} 
