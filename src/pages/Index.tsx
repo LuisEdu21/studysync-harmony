@@ -2,17 +2,13 @@ import { useState, useEffect } from 'react';
 import { StudyTimer } from '@/components/StudyTimer';
 import { TaskList } from '@/components/TaskList';
 import { StudyStats } from '@/components/StudyStats';
-import { StudyCalendar } from '@/components/StudyCalendar';
 import { SettingsModal } from '@/components/SettingsModal';
-import { StudyEventCreator } from '@/components/StudyEventCreator';
 import { StudyPlanner } from '@/components/StudyPlanner';
-import { CalendarImport } from '@/components/CalendarImport';
 import { useSmartReminders } from '@/hooks/useSmartReminders';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
 import { GraduationCap, Settings, Bell, User } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
-import { useStudyEvents } from '@/hooks/useStudyEvents';
 
 interface Task {
   id: string;
@@ -60,13 +56,10 @@ const Index = () => {
     }
   ]);
 
-  const { events: studyEvents, addEvent } = useStudyEvents();
-
   const [studyTime, setStudyTime] = useState(125); // minutes studied today
   const [weeklyGoal] = useState(600); // 10 hours per week
   const [streakDays] = useState(7);
   const [settingsModalOpen, setSettingsModalOpen] = useState(false);
-  const [eventCreatorOpen, setEventCreatorOpen] = useState(false);
 
   const { toast } = useToast();
 
@@ -135,12 +128,6 @@ const Index = () => {
         description: "Hora de voltar aos estudos com energia renovada!",
         duration: 3000,
       });
-    }
-  };
-
-  const handleBulkImport = async (importedEvents: any[]) => {
-    for (const event of importedEvents) {
-      await addEvent(event);
     }
   };
 
@@ -221,31 +208,19 @@ const Index = () => {
           {/* Left Column */}
           <div className="space-y-8">
             <StudyTimer onSessionComplete={handleSessionComplete} />
-            <StudyCalendar 
-              events={studyEvents} 
-              onEventClick={(event) => {
-                toast({
-                  title: event.title,
-                  description: `${event.subject} - ${event.time}`,
-                  duration: 3000,
-                });
-              }}
-              onCreateEvent={() => setEventCreatorOpen(true)}
-            />
           </div>
 
           {/* Right Column */}
           <div className="space-y-8">
-            <CalendarImport onImport={handleBulkImport} />
             <StudyPlanner 
               tasks={tasks.map(t => ({ ...t, difficulty: t.difficulty || 3 }))}
               onTaskUpdate={(updatedTasks) => setTasks(updatedTasks)} 
             />
-        <TaskList 
-          tasks={[]}
-          onTaskToggle={() => {}}
-          onTaskAdd={() => {}}
-        />
+            <TaskList 
+              tasks={[]}
+              onTaskToggle={() => {}}
+              onTaskAdd={() => {}}
+            />
           </div>
         </div>
       </main>
@@ -263,24 +238,6 @@ const Index = () => {
               ? `Reagendada para ${new Date(newDateTime).toLocaleString('pt-BR')}`
               : "Sessão foi reagendada automaticamente",
           });
-        }}
-      />
-
-      {/* Study Event Creator */}
-      <StudyEventCreator
-        open={eventCreatorOpen}
-        onOpenChange={setEventCreatorOpen}
-        onEventCreated={async (event) => {
-          const newEvent = {
-            title: event.title,
-            subject: event.subject || '',
-            date: event.startTime.split('T')[0],
-            time: event.startTime.split('T')[1]?.substring(0, 5) || '',
-            duration: Math.round((new Date(event.endTime).getTime() - new Date(event.startTime).getTime()) / 60000),
-            type: event.eventType || 'study',
-            description: event.description
-          };
-          await addEvent(newEvent);
         }}
       />
     </div>

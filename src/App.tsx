@@ -8,6 +8,7 @@ import Login from "./pages/Login";
 import Dashboard from "./pages/Dashboard";
 import StudyPlan from "./pages/StudyPlan";
 import Tasks from "./pages/Tasks";
+import Calendar from "./pages/Calendar";
 import NotFound from "./pages/NotFound";
 import AppLayout from "./components/AppLayout";
 
@@ -46,9 +47,10 @@ const App = () => (
               <AppLayout />
             </ProtectedRoute>
           }>
-            <Route index element={<Dashboard />} />
+          <Route index element={<Dashboard />} />
             <Route path="study-plan" element={<StudyPlan />} />
             <Route path="tasks" element={<Tasks />} />
+            <Route path="calendar" element={<Calendar />} />
           </Route>
           {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
           <Route path="*" element={<NotFound />} />
