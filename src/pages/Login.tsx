@@ -95,10 +95,47 @@ const Login = () => {
       return;
     }
 
-    if (signupPassword.length < 6) {
+    // Enhanced password validation
+    if (signupPassword.length < 8) {
       toast({
         title: "Erro",
-        description: "A senha deve ter pelo menos 6 caracteres",
+        description: "A senha deve ter pelo menos 8 caracteres",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    if (signupPassword.length > 72) {
+      toast({
+        title: "Erro",
+        description: "A senha deve ter no máximo 72 caracteres",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    if (!/[A-Z]/.test(signupPassword)) {
+      toast({
+        title: "Erro",
+        description: "A senha deve conter pelo menos uma letra maiúscula",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    if (!/[a-z]/.test(signupPassword)) {
+      toast({
+        title: "Erro",
+        description: "A senha deve conter pelo menos uma letra minúscula",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    if (!/[0-9]/.test(signupPassword)) {
+      toast({
+        title: "Erro",
+        description: "A senha deve conter pelo menos um número",
         variant: "destructive",
       });
       return;
@@ -269,7 +306,7 @@ const Login = () => {
                     </Button>
                   </div>
                   <p className="text-xs text-muted-foreground">
-                    Mínimo de 6 caracteres
+                    Mínimo de 8 caracteres, com letra maiúscula, minúscula e número
                   </p>
                 </div>
                 <div className="space-y-2">

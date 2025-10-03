@@ -20,6 +20,20 @@ serve(async (req) => {
 
   try {
     const { provider, code, redirectUri }: AuthRequest = await req.json();
+
+    // Security: Validate redirect URI against allowed patterns
+    const ALLOWED_REDIRECT_PATTERNS = [
+      /^https?:\/\/localhost:\d+/,
+      /^https:\/\/.*\.lovableproject\.com/,
+      /^https:\/\/.*\.supabase\.co/
+    ];
+
+    if (redirectUri && !ALLOWED_REDIRECT_PATTERNS.some(pattern => pattern.test(redirectUri))) {
+      return new Response(
+        JSON.stringify({ error: 'Invalid redirect URI' }),
+        { status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+      );
+    }
     
     const authHeader = req.headers.get('Authorization')!;
     const supabaseClient = createClient(

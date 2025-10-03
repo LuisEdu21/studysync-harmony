@@ -41,6 +41,15 @@ export const useCalendarImport = () => {
     document.body.removeChild(link);
   };
 
+  // Sanitize CSV cell to prevent CSV injection
+  const sanitizeCell = (cell: string): string => {
+    const dangerousChars = ['=', '+', '@', '-', '\t', '\r'];
+    if (dangerousChars.some(char => cell.trimStart().startsWith(char))) {
+      return "'" + cell; // Prefix with single quote to neutralize formula
+    }
+    return cell;
+  };
+
   const parseCSV = (content: string): CSVEvent[] => {
     const lines = content.split('\n').filter(line => line.trim());
     if (lines.length < 2) return [];
@@ -53,7 +62,7 @@ export const useCalendarImport = () => {
       const event: any = {};
 
       headers.forEach((header, index) => {
-        event[header] = values[index] || '';
+        event[header] = sanitizeCell(values[index] || '');
       });
 
       events.push({
@@ -144,6 +153,18 @@ export const useCalendarImport = () => {
 
   const processFile = async (file: File): Promise<{ events: CSVEvent[], errors: ValidationError[] }> => {
     setIsProcessing(true);
+
+    // Security: File size limit (5MB)
+    const MAX_FILE_SIZE = 5 * 1024 * 1024;
+    if (file.size > MAX_FILE_SIZE) {
+      toast({
+        title: "Arquivo muito grande",
+        description: "O arquivo deve ter no máximo 5MB",
+        variant: "destructive"
+      });
+      setIsProcessing(false);
+      return { events: [], errors: [] };
+    }
 
     return new Promise((resolve) => {
       const reader = new FileReader();
