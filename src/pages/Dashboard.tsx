@@ -69,25 +69,43 @@ const Dashboard = () => {
   );
 
   const handleSessionComplete = async (type: 'study' | 'break', duration: number) => {
-    // Save session to database
-    await addSession({
-      duration_minutes: duration,
-      session_type: type,
-      subject: type === 'study' ? 'Sessão Geral' : undefined
-    });
+    try {
+      const newSession = {
+        subject: type === 'study' ? 'Sessão Pomodoro' : 'Pausa',
+        duration_minutes: Math.floor(duration / 60), // Convert seconds to minutes
+        session_type: type,
+      };
 
-    if (type === 'study') {
+      await addSession(newSession);
+      
       toast({
-        title: "Sessão de estudo concluída! 🎯",
-        description: `Você estudou por ${Math.floor(duration / 60)} minutos. Continue assim!`,
-        duration: 5000,
+        title: type === 'study' ? "Sessão concluída! 🎉" : "Pausa concluída! ☕",
+        description: `Você ${type === 'study' ? 'estudou' : 'descansou'} por ${Math.floor(duration / 60)} minutos.`,
       });
-    } else {
+    } catch (error) {
+      console.error('Error saving session:', error);
       toast({
-        title: "Pausa concluída! ☕",
-        description: "Hora de voltar aos estudos com energia renovada!",
-        duration: 3000,
+        title: "Erro ao salvar sessão",
+        description: "Não foi possível registrar sua sessão de estudo.",
+        variant: "destructive",
       });
+    }
+  };
+
+  const handleProgressUpdate = async (type: 'study' | 'break', duration: number) => {
+    // Only save study sessions, not breaks
+    if (type !== 'study') return;
+    
+    try {
+      const newSession = {
+        subject: 'Sessão Pomodoro Parcial',
+        duration_minutes: Math.floor(duration / 60), // Convert seconds to minutes
+        session_type: type,
+      };
+
+      await addSession(newSession);
+    } catch (error) {
+      console.error('Error saving progress:', error);
     }
   };
 
@@ -198,8 +216,11 @@ const Dashboard = () => {
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
         {/* Left Column */}
         <div className="space-y-8">
-          <StudyTimer onSessionComplete={handleSessionComplete} />
-          <StudyCalendar 
+          <StudyTimer 
+            onSessionComplete={handleSessionComplete}
+            onProgressUpdate={handleProgressUpdate}
+          />
+          <StudyCalendar
             events={studyEvents} 
             onEventClick={(event) => {
               toast({
