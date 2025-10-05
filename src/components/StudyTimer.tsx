@@ -6,14 +6,17 @@ import { Play, Pause, RotateCcw, Coffee, BookOpen } from 'lucide-react';
 
 interface StudyTimerProps {
   onSessionComplete?: (type: 'study' | 'break', duration: number) => void;
+  onProgressUpdate?: (type: 'study' | 'break', duration: number) => void;
 }
 
-export const StudyTimer = ({ onSessionComplete }: StudyTimerProps) => {
+export const StudyTimer = ({ onSessionComplete, onProgressUpdate }: StudyTimerProps) => {
   const [timeLeft, setTimeLeft] = useState(25 * 60); // 25 minutes in seconds
   const [isRunning, setIsRunning] = useState(false);
   const [sessionType, setSessionType] = useState<'study' | 'break'>('study');
   const [totalTime, setTotalTime] = useState(25 * 60);
   const intervalRef = useRef<NodeJS.Timeout | null>(null);
+  const progressSaveRef = useRef<NodeJS.Timeout | null>(null);
+  const elapsedTimeRef = useRef(0);
 
   const studyTime = 25 * 60; // 25 minutes
   const breakTime = 5 * 60; // 5 minutes
@@ -22,10 +25,23 @@ export const StudyTimer = ({ onSessionComplete }: StudyTimerProps) => {
     if (isRunning && timeLeft > 0) {
       intervalRef.current = setInterval(() => {
         setTimeLeft((prev) => prev - 1);
+        elapsedTimeRef.current += 1;
       }, 1000);
+
+      // Save progress every 60 seconds for study sessions
+      if (sessionType === 'study') {
+        progressSaveRef.current = setInterval(() => {
+          const elapsed = elapsedTimeRef.current;
+          if (elapsed >= 60) {
+            onProgressUpdate?.(sessionType, elapsed);
+          }
+        }, 60000); // Every minute
+      }
     } else if (timeLeft === 0) {
       // Session completed
-      onSessionComplete?.(sessionType, totalTime);
+      const elapsed = totalTime - timeLeft;
+      onSessionComplete?.(sessionType, elapsed);
+      elapsedTimeRef.current = 0;
       
       // Auto switch to break or study
       if (sessionType === 'study') {
@@ -44,8 +60,11 @@ export const StudyTimer = ({ onSessionComplete }: StudyTimerProps) => {
       if (intervalRef.current) {
         clearInterval(intervalRef.current);
       }
+      if (progressSaveRef.current) {
+        clearInterval(progressSaveRef.current);
+      }
     };
-  }, [isRunning, timeLeft, sessionType, onSessionComplete, totalTime]);
+  }, [isRunning, timeLeft, sessionType, onSessionComplete, onProgressUpdate, totalTime]);
 
   const formatTime = (seconds: number) => {
     const mins = Math.floor(seconds / 60);
@@ -54,18 +73,33 @@ export const StudyTimer = ({ onSessionComplete }: StudyTimerProps) => {
   };
 
   const handleStartPause = () => {
+    // When pausing a study session, save the progress
+    if (isRunning && sessionType === 'study' && elapsedTimeRef.current > 0) {
+      onProgressUpdate?.(sessionType, elapsedTimeRef.current);
+      elapsedTimeRef.current = 0;
+    }
     setIsRunning(!isRunning);
   };
 
   const handleReset = () => {
+    // Save progress if there's elapsed time on a study session
+    if (sessionType === 'study' && elapsedTimeRef.current > 0) {
+      onProgressUpdate?.(sessionType, elapsedTimeRef.current);
+    }
     setIsRunning(false);
+    elapsedTimeRef.current = 0;
     const newTime = sessionType === 'study' ? studyTime : breakTime;
     setTimeLeft(newTime);
     setTotalTime(newTime);
   };
 
   const handleSessionSwitch = () => {
+    // Save progress if switching from a study session with elapsed time
+    if (sessionType === 'study' && elapsedTimeRef.current > 0) {
+      onProgressUpdate?.(sessionType, elapsedTimeRef.current);
+    }
     setIsRunning(false);
+    elapsedTimeRef.current = 0;
     if (sessionType === 'study') {
       setSessionType('break');
       setTimeLeft(breakTime);

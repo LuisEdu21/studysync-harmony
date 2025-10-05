@@ -7,8 +7,11 @@ import {
   DialogTitle,
 } from '@/components/ui/dialog';
 import { NotificationSettings } from './NotificationSettings';
+import { WeeklyGoalSettings } from './WeeklyGoalSettings';
 import { Settings, Bell } from 'lucide-react';
 import { useSmartReminders } from '@/hooks/useSmartReminders';
+import { useUserProfile } from '@/hooks/useUserProfile';
+import { useToast } from '@/hooks/use-toast';
 
 interface SettingsModalProps {
   open: boolean;
@@ -33,6 +36,26 @@ export const SettingsModal = ({
     requestNotificationPermission
   } = useSmartReminders(tasks, sessions, onRescheduleSession);
 
+  const { profile, updateProfile } = useUserProfile();
+  const { toast } = useToast();
+
+  const handleWeeklyGoalChange = async (minutes: number) => {
+    try {
+      await updateProfile({ weekly_goal_minutes: minutes });
+      toast({
+        title: "Meta atualizada!",
+        description: `Nova meta semanal: ${Math.floor(minutes / 60)}h`,
+      });
+    } catch (error) {
+      console.error('Error updating weekly goal:', error);
+      toast({
+        title: "Erro ao atualizar meta",
+        description: "Não foi possível salvar sua nova meta semanal.",
+        variant: "destructive",
+      });
+    }
+  };
+
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="max-w-3xl max-h-[85vh] overflow-hidden">
@@ -46,7 +69,12 @@ export const SettingsModal = ({
           </DialogDescription>
         </DialogHeader>
 
-        <div className="overflow-y-auto max-h-[calc(85vh-12rem)] mt-4">
+        <div className="overflow-y-auto max-h-[calc(85vh-12rem)] mt-4 space-y-6">
+          <WeeklyGoalSettings
+            weeklyGoalMinutes={profile?.weekly_goal_minutes || 600}
+            onWeeklyGoalChange={handleWeeklyGoalChange}
+          />
+          
           <NotificationSettings
             settings={reminderSettings}
             onSettingsChange={setReminderSettings}
