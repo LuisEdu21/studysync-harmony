@@ -16,6 +16,7 @@ export interface StudyStats {
 export const useStudyStats = () => {
   const { user } = useAuth();
   const [todayStats, setTodayStats] = useState<StudyStats | null>(null);
+  const [weeklyTotal, setWeeklyTotal] = useState<number>(0);
   const [loading, setLoading] = useState(true);
 
   const fetchTodayStats = async () => {
@@ -101,10 +102,19 @@ export const useStudyStats = () => {
 
   useEffect(() => {
     fetchTodayStats();
+    
+    // Fetch weekly total
+    const fetchWeeklyTotal = async () => {
+      const total = await getTotalWeeklyTime();
+      setWeeklyTotal(total);
+    };
+    
+    fetchWeeklyTotal();
   }, [user]);
 
   return {
     todayStats,
+    weeklyTotal,
     loading,
     getWeeklyStats,
     getTotalWeeklyTime,

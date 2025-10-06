@@ -197,6 +197,7 @@ const Index = () => {
           <StudyStats
             todayStudyTime={studyTime}
             weeklyGoal={weeklyGoal}
+            weeklyTotal={0}
             streakDays={streakDays}
             completedTasks={completedTasks}
             totalTasks={totalTasks}

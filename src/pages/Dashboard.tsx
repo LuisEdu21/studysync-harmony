@@ -34,7 +34,7 @@ const Dashboard = () => {
   const { profile } = useUserProfile();
   const { tasks } = useRealTasks();
   const { addSession } = useStudySessions();
-  const { todayStats } = useStudyStats();
+  const { todayStats, weeklyTotal } = useStudyStats();
   const { events: studyEvents, addEvent } = useStudyEvents();
 
   // Get real data from hooks
@@ -135,6 +135,7 @@ const Dashboard = () => {
       <StudyStats
         todayStudyTime={studyTime}
         weeklyGoal={weeklyGoal}
+        weeklyTotal={weeklyTotal}
         streakDays={streakDays}
         completedTasks={completedTasks}
         totalTasks={totalTasks}

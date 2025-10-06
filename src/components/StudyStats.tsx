@@ -5,6 +5,7 @@ import { Target, Clock, Award, TrendingUp } from 'lucide-react';
 interface StudyStatsProps {
   todayStudyTime: number; // in minutes
   weeklyGoal: number; // in minutes
+  weeklyTotal: number; // in minutes
   streakDays: number;
   completedTasks: number;
   totalTasks: number;
@@ -12,7 +13,8 @@ interface StudyStatsProps {
 
 export const StudyStats = ({ 
   todayStudyTime, 
-  weeklyGoal, 
+  weeklyGoal,
+  weeklyTotal,
   streakDays, 
   completedTasks, 
   totalTasks 
@@ -105,9 +107,19 @@ export const StudyStats = ({
             <p className="text-xl font-bold text-accent">{formatTime(weeklyGoal)}</p>
           </div>
         </div>
-        <p className="text-xs text-muted-foreground">
-          Faltam {formatTime(Math.max(0, weeklyGoal - todayStudyTime * 7))} esta semana
-        </p>
+        <div className="space-y-2">
+          <div className="flex justify-between text-sm">
+            <span>Progresso</span>
+            <span>{formatTime(weeklyTotal)}</span>
+          </div>
+          <Progress value={Math.min((weeklyTotal / weeklyGoal) * 100, 100)} className="h-2" />
+          <p className="text-xs text-muted-foreground">
+            {weeklyTotal >= weeklyGoal 
+              ? '🎉 Meta atingida!' 
+              : `Faltam ${formatTime(Math.max(0, weeklyGoal - weeklyTotal))} esta semana`
+            }
+          </p>
+        </div>
       </Card>
     </div>
   );
