@@ -2,7 +2,6 @@ import { useState } from 'react';
 import { StudyTimer } from '@/components/StudyTimer';
 import { StudyStats } from '@/components/StudyStats';
 import { StudyCalendar } from '@/components/StudyCalendar';
-import { CalendarIntegrationCard } from '@/components/CalendarIntegrationCard';
 import { SettingsModal } from '@/components/SettingsModal';
 import { StudyEventCreator } from '@/components/StudyEventCreator';
 import QuickAccessCard from '@/components/QuickAccessCard';
@@ -233,10 +232,6 @@ const Dashboard = () => {
           />
         </div>
 
-        {/* Right Column */}
-        <div className="space-y-8">
-          <CalendarIntegrationCard onOpenSettings={() => setSettingsModalOpen(true)} />
-        </div>
       </div>
 
       {/* Settings Modal */}
