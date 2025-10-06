@@ -219,6 +219,10 @@ const Dashboard = () => {
             onSessionComplete={handleSessionComplete}
             onProgressUpdate={handleProgressUpdate}
           />
+        </div>
+
+        {/* Right Column */}
+        <div className="space-y-8">
           <StudyCalendar
             events={studyEvents} 
             onEventClick={(event) => {
@@ -231,7 +235,6 @@ const Dashboard = () => {
             onCreateEvent={() => setEventCreatorOpen(true)}
           />
         </div>
-
       </div>
 
       {/* Settings Modal */}
