@@ -68,8 +68,8 @@ export const useStudySessions = () => {
 
       setSessions(prev => [data as StudySession, ...prev]);
       
-      // Update daily stats
-      await updateDailyStats();
+      // Update daily stats with the session duration
+      await updateDailyStats(session.duration_minutes);
       
       return data;
     } catch (error) {
@@ -77,52 +77,23 @@ export const useStudySessions = () => {
     }
   };
 
-  const updateDailyStats = async () => {
+  const updateDailyStats = async (durationMinutes: number) => {
     if (!user) return;
 
     try {
       const today = new Date().toISOString().split('T')[0];
       
-      // Get today's study sessions
-      const { data: todaySessions, error: sessionError } = await supabase
-        .from('study_sessions')
-        .select('duration_minutes')
-        .eq('user_id', user.id)
-        .eq('session_type', 'study')
-        .gte('completed_at', `${today}T00:00:00.000Z`)
-        .lt('completed_at', `${today}T23:59:59.999Z`);
-
-      if (sessionError) {
-        console.error('Error fetching today sessions:', sessionError);
-        return;
-      }
-
-      const totalMinutes = todaySessions?.reduce((sum, session) => sum + session.duration_minutes, 0) || 0;
-      const sessionsCount = todaySessions?.length || 0;
-
-      // Calculate streak
-      const { data: streakData, error: streakError } = await supabase
-        .rpc('calculate_user_streak', { user_id_param: user.id });
-
-      if (streakError) {
-        console.error('Error calculating streak:', streakError);
-      }
-
-      const streak = streakData || 0;
-
-      // Upsert daily stats
-      const { error: upsertError } = await supabase
-        .from('study_stats')
-        .upsert({
-          user_id: user.id,
-          date: today,
-          total_study_minutes: totalMinutes,
-          sessions_count: sessionsCount,
-          streak_days: streak
+      // Use atomic upsert function to prevent duplicate key errors
+      const { error } = await supabase
+        .rpc('upsert_study_stats', {
+          p_user_id: user.id,
+          p_date: today,
+          p_minutes: durationMinutes,
+          p_sessions_increment: 1
         });
 
-      if (upsertError) {
-        console.error('Error updating daily stats:', upsertError);
+      if (error) {
+        console.error('Error updating daily stats:', error);
       }
     } catch (error) {
       console.error('Error updating daily stats:', error);

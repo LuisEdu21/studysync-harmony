@@ -280,6 +280,15 @@ export type Database = {
         Args: { user_id_param: string }
         Returns: number
       }
+      upsert_study_stats: {
+        Args: {
+          p_date: string
+          p_minutes: number
+          p_sessions_increment?: number
+          p_user_id: string
+        }
+        Returns: undefined
+      }
     }
     Enums: {
       [_ in never]: never

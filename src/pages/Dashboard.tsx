@@ -91,22 +91,6 @@ const Dashboard = () => {
     }
   };
 
-  const handleProgressUpdate = async (type: 'study' | 'break', duration: number) => {
-    // Only save study sessions, not breaks
-    if (type !== 'study') return;
-    
-    try {
-      const newSession = {
-        subject: 'Sessão Pomodoro Parcial',
-        duration_minutes: Math.floor(duration / 60), // Convert seconds to minutes
-        session_type: type,
-      };
-
-      await addSession(newSession);
-    } catch (error) {
-      console.error('Error saving progress:', error);
-    }
-  };
 
   const completedTasks = tasks.filter(task => task.completed).length;
   const totalTasks = tasks.length;
@@ -218,7 +202,6 @@ const Dashboard = () => {
         <div className="space-y-8">
           <StudyTimer 
             onSessionComplete={handleSessionComplete}
-            onProgressUpdate={handleProgressUpdate}
           />
         </div>
 

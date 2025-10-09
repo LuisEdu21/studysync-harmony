@@ -208,7 +208,9 @@ const Index = () => {
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
           {/* Left Column */}
           <div className="space-y-8">
-            <StudyTimer onSessionComplete={handleSessionComplete} />
+            <StudyTimer 
+              onSessionComplete={handleSessionComplete}
+            />
           </div>
 
           {/* Right Column */}
