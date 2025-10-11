@@ -222,7 +222,6 @@ const Index = () => {
             <TaskList 
               tasks={[]}
               onTaskToggle={() => {}}
-              onTaskAdd={() => {}}
             />
           </div>
         </div>

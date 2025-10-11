@@ -92,8 +92,16 @@ const Dashboard = () => {
   };
 
 
-  const completedTasks = tasks.filter(task => task.completed).length;
-  const totalTasks = tasks.length;
+  // Filter tasks for today only
+  const todayTasks = tasks.filter(task => {
+    if (!task.due_date) return false;
+    const taskDate = new Date(task.due_date);
+    const today = new Date();
+    return taskDate.toDateString() === today.toDateString();
+  });
+  
+  const completedTasks = todayTasks.filter(task => task.completed).length;
+  const totalTasks = todayTasks.length;
 
   return (
     <div className="space-y-8">

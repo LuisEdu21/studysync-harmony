@@ -1,10 +1,7 @@
-import { useState } from 'react';
-import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
 import { Checkbox } from '@/components/ui/checkbox';
-import { Input } from '@/components/ui/input';
 import { Badge } from '@/components/ui/badge';
-import { Plus, Calendar, Clock, BookOpen } from 'lucide-react';
+import { Calendar, Clock, BookOpen } from 'lucide-react';
 import { type RealTask } from '@/hooks/useRealTasks';
 
 interface Task {
@@ -20,28 +17,9 @@ interface Task {
 interface TaskListProps {
   tasks: RealTask[];
   onTaskToggle: (taskId: string) => void;
-  onTaskAdd: (task: Omit<RealTask, 'id' | 'user_id' | 'created_at' | 'updated_at'>) => void;
 }
 
-export const TaskList = ({ tasks, onTaskToggle, onTaskAdd }: TaskListProps) => {
-  const [newTask, setNewTask] = useState('');
-  const [isAdding, setIsAdding] = useState(false);
-
-  const handleAddTask = () => {
-    if (newTask.trim()) {
-      onTaskAdd({
-        title: newTask,
-        subject: 'Geral',
-        due_date: new Date().toISOString().split('T')[0],
-        priority: 'medium',
-        completed: false,
-        estimated_time: 30,
-        difficulty: 'medium'
-      });
-      setNewTask('');
-      setIsAdding(false);
-    }
-  };
+export const TaskList = ({ tasks, onTaskToggle }: TaskListProps) => {
 
   const getPriorityColor = (priority: string) => {
     switch (priority) {
@@ -62,39 +40,7 @@ export const TaskList = ({ tasks, onTaskToggle, onTaskAdd }: TaskListProps) => {
           <BookOpen className="w-5 h-5 text-focus" />
           Tarefas
         </h3>
-        <Button
-          onClick={() => setIsAdding(true)}
-          size="sm"
-          className="btn-primary"
-        >
-          <Plus className="w-4 h-4" />
-        </Button>
       </div>
-
-      {isAdding && (
-        <div className="mb-4 p-3 border border-border rounded-lg bg-muted/50">
-          <Input
-            value={newTask}
-            onChange={(e) => setNewTask(e.target.value)}
-            placeholder="Nova tarefa..."
-            className="mb-2 focus-ring"
-            onKeyDown={(e) => e.key === 'Enter' && handleAddTask()}
-            autoFocus
-          />
-          <div className="flex gap-2">
-            <Button onClick={handleAddTask} size="sm" className="btn-primary">
-              Adicionar
-            </Button>
-            <Button 
-              onClick={() => setIsAdding(false)} 
-              size="sm" 
-              variant="outline"
-            >
-              Cancelar
-            </Button>
-          </div>
-        </div>
-      )}
 
       <div className="space-y-4">
         {pendingTasks.length > 0 && (
@@ -170,7 +116,7 @@ export const TaskList = ({ tasks, onTaskToggle, onTaskAdd }: TaskListProps) => {
           </div>
         )}
 
-        {tasks.length === 0 && !isAdding && (
+        {tasks.length === 0 && (
           <div className="text-center py-8 text-muted-foreground">
             <BookOpen className="w-12 h-12 mx-auto mb-4 opacity-50" />
             <p>Nenhuma tarefa ainda</p>

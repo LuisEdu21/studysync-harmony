@@ -1,13 +1,16 @@
 import { TaskList } from '@/components/TaskList';
+import { TaskCreator } from '@/components/TaskCreator';
 import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Plus, CheckCircle, Clock, AlertTriangle } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import { useRealTasks, type RealTask } from '@/hooks/useRealTasks';
+import { useState } from 'react';
 
 const Tasks = () => {
   const { toast } = useToast();
   const { tasks, addTask, toggleTask, loading } = useRealTasks();
+  const [creatorOpen, setCreatorOpen] = useState(false);
 
   const handleTaskToggle = async (taskId: string) => {
     const task = tasks.find(t => t.id === taskId);
@@ -54,7 +57,7 @@ const Tasks = () => {
             Gerencie suas atividades acadêmicas e prazos
           </p>
         </div>
-        <Button className="btn-primary">
+        <Button className="btn-primary" onClick={() => setCreatorOpen(true)}>
           <Plus className="w-4 h-4 mr-2" />
           Nova Tarefa
         </Button>
@@ -139,9 +142,15 @@ const Tasks = () => {
         <TaskList 
           tasks={tasks}
           onTaskToggle={handleTaskToggle}
-          onTaskAdd={handleTaskAdd}
         />
       )}
+
+      {/* Task Creator Dialog */}
+      <TaskCreator
+        open={creatorOpen}
+        onOpenChange={setCreatorOpen}
+        onTaskCreated={handleTaskAdd}
+      />
     </div>
   );
 };
