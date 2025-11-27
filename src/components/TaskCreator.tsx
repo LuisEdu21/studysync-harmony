@@ -15,6 +15,8 @@ interface TaskCreatorProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
   onTaskCreated: (task: Omit<RealTask, 'id' | 'user_id' | 'created_at' | 'updated_at'>) => void;
+  editingTask?: RealTask;
+  onTaskUpdated?: (taskId: string, task: Partial<RealTask>) => void;
 }
 
 const SUBJECTS = [
@@ -33,7 +35,7 @@ const SUBJECTS = [
   'Outro'
 ];
 
-export const TaskCreator = ({ open, onOpenChange, onTaskCreated }: TaskCreatorProps) => {
+export const TaskCreator = ({ open, onOpenChange, onTaskCreated, editingTask, onTaskUpdated }: TaskCreatorProps) => {
   const [title, setTitle] = useState('');
   const [subject, setSubject] = useState('');
   const [dueDate, setDueDate] = useState<Date>();
@@ -41,20 +43,45 @@ export const TaskCreator = ({ open, onOpenChange, onTaskCreated }: TaskCreatorPr
   const [estimatedTime, setEstimatedTime] = useState('60');
   const [difficulty, setDifficulty] = useState<'easy' | 'medium' | 'hard'>('medium');
 
+  // Load editing task data
+  useState(() => {
+    if (editingTask) {
+      setTitle(editingTask.title);
+      setSubject(editingTask.subject || '');
+      setDueDate(editingTask.due_date ? new Date(editingTask.due_date) : undefined);
+      setPriority(editingTask.priority as 'low' | 'medium' | 'high');
+      setEstimatedTime(editingTask.estimated_time?.toString() || '60');
+      setDifficulty(editingTask.difficulty as 'easy' | 'medium' | 'hard');
+    }
+  });
+
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     
     if (!title.trim()) return;
 
-    onTaskCreated({
-      title: title.trim(),
-      subject: subject || null,
-      due_date: dueDate ? dueDate.toISOString() : null,
-      priority,
-      completed: false,
-      estimated_time: parseInt(estimatedTime) || 60,
-      difficulty
-    });
+    if (editingTask && onTaskUpdated) {
+      // Update existing task
+      onTaskUpdated(editingTask.id, {
+        title: title.trim(),
+        subject: subject || null,
+        due_date: dueDate ? dueDate.toISOString() : null,
+        priority,
+        estimated_time: parseInt(estimatedTime) || 60,
+        difficulty
+      });
+    } else {
+      // Create new task
+      onTaskCreated({
+        title: title.trim(),
+        subject: subject || null,
+        due_date: dueDate ? dueDate.toISOString() : null,
+        priority,
+        completed: false,
+        estimated_time: parseInt(estimatedTime) || 60,
+        difficulty
+      });
+    }
 
     // Reset form
     setTitle('');
@@ -70,7 +97,7 @@ export const TaskCreator = ({ open, onOpenChange, onTaskCreated }: TaskCreatorPr
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="sm:max-w-[500px]">
         <DialogHeader>
-          <DialogTitle>Nova Tarefa</DialogTitle>
+          <DialogTitle>{editingTask ? 'Editar Tarefa' : 'Nova Tarefa'}</DialogTitle>
         </DialogHeader>
         <form onSubmit={handleSubmit}>
           <div className="space-y-4 py-4">
@@ -182,7 +209,7 @@ export const TaskCreator = ({ open, onOpenChange, onTaskCreated }: TaskCreatorPr
               Cancelar
             </Button>
             <Button type="submit" disabled={!title.trim()}>
-              Criar Tarefa
+              {editingTask ? 'Salvar Alterações' : 'Criar Tarefa'}
             </Button>
           </DialogFooter>
         </form>
