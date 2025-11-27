@@ -26,41 +26,28 @@ export const useStudyStats = () => {
     try {
       const today = new Date().toISOString().split('T')[0];
       
+      // Use upsert to avoid duplicate key errors
       const { data, error } = await supabase
         .from('study_stats')
-        .select('*')
-        .eq('user_id', user.id)
-        .eq('date', today)
-        .maybeSingle();
+        .upsert({
+          user_id: user.id,
+          date: today,
+          total_study_minutes: 0,
+          sessions_count: 0,
+          streak_days: 0
+        }, {
+          onConflict: 'user_id,date',
+          ignoreDuplicates: false
+        })
+        .select()
+        .single();
 
       if (error) {
         console.error('Error fetching today stats:', error);
         return;
       }
 
-      // If no stats for today, create initial record
-      if (!data) {
-        const { data: newStats, error: insertError } = await supabase
-          .from('study_stats')
-          .insert({
-            user_id: user.id,
-            date: today,
-            total_study_minutes: 0,
-            sessions_count: 0,
-            streak_days: 0
-          })
-          .select()
-          .single();
-
-        if (insertError) {
-          console.error('Error creating today stats:', insertError);
-          return;
-        }
-
-        setTodayStats(newStats);
-      } else {
-        setTodayStats(data);
-      }
+      setTodayStats(data);
     } catch (error) {
       console.error('Error fetching today stats:', error);
     } finally {
