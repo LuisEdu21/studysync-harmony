@@ -1,7 +1,8 @@
 import { Card } from '@/components/ui/card';
 import { Checkbox } from '@/components/ui/checkbox';
 import { Badge } from '@/components/ui/badge';
-import { Calendar, Clock, BookOpen } from 'lucide-react';
+import { Button } from '@/components/ui/button';
+import { Calendar, Clock, BookOpen, Edit, Trash2 } from 'lucide-react';
 import { type RealTask } from '@/hooks/useRealTasks';
 
 interface Task {
@@ -17,9 +18,11 @@ interface Task {
 interface TaskListProps {
   tasks: RealTask[];
   onTaskToggle: (taskId: string) => void;
+  onTaskEdit?: (task: RealTask) => void;
+  onTaskDelete?: (taskId: string) => void;
 }
 
-export const TaskList = ({ tasks, onTaskToggle }: TaskListProps) => {
+export const TaskList = ({ tasks, onTaskToggle, onTaskEdit, onTaskDelete }: TaskListProps) => {
 
   const getPriorityColor = (priority: string) => {
     switch (priority) {
@@ -76,10 +79,32 @@ export const TaskList = ({ tasks, onTaskToggle }: TaskListProps) => {
                       </span>
                     </div>
                   </div>
-                  <Badge className={getPriorityColor(task.priority)}>
-                    {task.priority === 'high' ? 'Alta' : 
-                     task.priority === 'medium' ? 'Média' : 'Baixa'}
-                  </Badge>
+                  <div className="flex items-center gap-2">
+                    <Badge className={getPriorityColor(task.priority)}>
+                      {task.priority === 'high' ? 'Alta' : 
+                       task.priority === 'medium' ? 'Média' : 'Baixa'}
+                    </Badge>
+                    {onTaskEdit && (
+                      <Button
+                        variant="ghost"
+                        size="icon"
+                        className="h-8 w-8"
+                        onClick={() => onTaskEdit(task)}
+                      >
+                        <Edit className="h-4 w-4" />
+                      </Button>
+                    )}
+                    {onTaskDelete && (
+                      <Button
+                        variant="ghost"
+                        size="icon"
+                        className="h-8 w-8 text-destructive hover:text-destructive"
+                        onClick={() => onTaskDelete(task.id)}
+                      >
+                        <Trash2 className="h-4 w-4" />
+                      </Button>
+                    )}
+                  </div>
                 </div>
               ))}
             </div>
